@@ -2,7 +2,7 @@
   "name": "rest-client",
   "main": "./lib/rest-client",
   "version": "0.0.0",
-  "description": "A simple REST client",
+  "description": "A simple REST client for your favorite editor!",
   "repository": "https://github.com/atom/rest-client",
   "license": "MIT",
   "engines": {
