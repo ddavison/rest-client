@@ -1,0 +1,11 @@
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'REST Client'
+      'submenu': [
+        { 'label': 'Show', 'command': 'rest-client:show' }
+      ]
+    ]
+  }
+]
