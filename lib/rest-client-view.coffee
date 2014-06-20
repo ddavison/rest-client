@@ -32,6 +32,7 @@ rest_form =
   status: '.rest-client-status',
   user_agent: '.rest-client-user-agent',
   open_in_editor: '.rest-client-open-in-editor'
+  loading: '.rest-client-loading-icon'
 
 
 module.exports =
@@ -72,11 +73,11 @@ class RestClientView extends ScrollView
         @div class: 'rest-client-payload-container', =>
           @h5 'Payload'
 
+          @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
+          @div class: "text-info lnk float-right #{rest_form.encode_payload.split('.')[1]}", 'Encode payload'
           @div class: 'btn-group btn-group-lg', =>
             @button class: 'btn selected', 'Raw'
 
-          @div class: "text-info lnk #{rest_form.encode_payload.split('.')[1]}", 'Encode payload'
-          @div class: "text-info lnk #{rest_form.decode_payload.split('.')[1]}", 'Decode payload'
           @textarea class: "editor native-key-bindings #{rest_form.payload.split('.')[1]}", rows: 7
 
         # Content-Type
@@ -89,11 +90,13 @@ class RestClientView extends ScrollView
           @option value: 'text/html', 'text/html'
           @option value: 'text/plain', 'text/plain'
 
+        # Result
         @div class: 'tool-panel panel-bottom padded', =>
           @strong 'Result | '
           @span class: "#{rest_form.status.split('.')[1]}"
 
-          @pre class: "#{rest_form.result.split('.')[1]}", 'No data yet..'
+          @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
+          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", 'No data yet..'
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in seperate editor'
 
   initialize: ->
@@ -138,6 +141,8 @@ class RestClientView extends ScrollView
     $(rest_form.payload).val(decoded_payload)
 
   clearForm: ->
+    @hideLoading()
+    $(rest_form.result).show()
     $(rest_form.url).val("")
     $(rest_form.headers).val("")
     $(rest_form.payload).val("")
@@ -155,7 +160,6 @@ class RestClientView extends ScrollView
 
 
     payload = $(rest_form.payload).val()
-    console.log payload
     if payload
       switch $(rest_form.content_type).val()
         when "application/json"
@@ -163,7 +167,7 @@ class RestClientView extends ScrollView
           request_options.body = JSON.stringify(json_obj)
         else
           request_options.body = payload
-
+    @showLoading()
     request(request_options, (error, response, body) =>
       @response = body
       if !error
@@ -177,12 +181,15 @@ class RestClientView extends ScrollView
             $(rest_form.status).addClass('text-error')
             $(rest_form.status).text(response.statusCode + " " +response.statusMessage)
         $(rest_form.result).text(body)
+        @hideLoading()
       else
         $(rest_form.status).removeClass('text-success')
         $(rest_form.status).addClass('text-error')
         $(rest_form.status).text('NO RESPONSE')
         $(rest_form.result).text(error)
+        @hideLoading()
     )
+
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
@@ -194,3 +201,12 @@ class RestClientView extends ScrollView
   getTitle: -> "REST Client"
 
   getModel: ->
+
+  # loading bar
+  showLoading: ->
+    $(rest_form.result).hide()
+    $(rest_form.loading).show()
+
+  hideLoading: ->
+    $(rest_form.loading).fadeOut()
+    $(rest_form.result).show()
