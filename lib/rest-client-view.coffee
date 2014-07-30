@@ -47,7 +47,7 @@ class RestClientView extends ScrollView
               @button class: "btn btn-lg #{rest_form.clear_btn.split('.')[1]}", 'Clear'
               @button class: "btn btn-lg #{rest_form.send_btn.split('.')[1]}", 'Send'
 
-        @input type: 'text', class: "editor native-key-bindings #{rest_form.url.split('.')[1]}"
+        @input type: 'text', class: "field native-key-bindings #{rest_form.url.split('.')[1]}"
 
         # methods
         ## GET
@@ -65,9 +65,9 @@ class RestClientView extends ScrollView
           @div class: 'btn-group btn-group-lg', =>
             @button class: 'btn selected', 'Raw'
 
-          @textarea class: "editor native-key-bindings #{rest_form.headers.split('.')[1]}", rows: 7
+          @textarea class: "field native-key-bindings #{rest_form.headers.split('.')[1]}", rows: 7
           @strong 'User-Agent'
-          @input class: "editor #{rest_form.user_agent.split('.')[1]}", value: 'atom-rest-client'
+          @input class: "field #{rest_form.user_agent.split('.')[1]}", value: 'atom-rest-client'
 
         # Payload
         @div class: 'rest-client-payload-container', =>
@@ -78,7 +78,7 @@ class RestClientView extends ScrollView
           @div class: 'btn-group btn-group-lg', =>
             @button class: 'btn selected', 'Raw'
 
-          @textarea class: "editor native-key-bindings #{rest_form.payload.split('.')[1]}", rows: 7
+          @textarea class: "field native-key-bindings #{rest_form.payload.split('.')[1]}", rows: 7
 
         # Content-Type
         @select class: "list-group #{rest_form.content_type.split('.')[1]}", =>
