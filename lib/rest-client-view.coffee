@@ -115,6 +115,12 @@ class RestClientView extends ScrollView
 
     @on 'click', rest_form.open_in_editor, => @openInEditor()
 
+    @on 'keypress', rest_form.url, ((_this) ->
+      ->
+        _this.sendRequest()  if event.keyCode is 13
+        return
+    )(this)
+
   openInEditor: ->
     if $(rest_form.result).text() != 'No data yet..'
       file_name = "#{current_method} - #{$(rest_form.url).val()}"
