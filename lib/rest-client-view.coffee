@@ -97,7 +97,7 @@ class RestClientView extends ScrollView
 
           @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
           @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", 'No data yet..'
-          @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in seperate editor'
+          @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
     for method in methods
@@ -155,12 +155,23 @@ class RestClientView extends ScrollView
     $(rest_form.result).text('No data yet..')
     $(rest_form.status).text("")
 
+  getHeaders: ->
+    headers = {
+      'User-Agent': $(rest_form.user_agent).val(),
+      'Content-Type': $(rest_form.content_type).val() + ';charset=utf-8'
+    }
+    custom_headers = $(rest_form.headers).val().split('\n')
+
+    for custom_header in custom_headers
+      current_header = custom_header.split(':')
+      headers[current_header[0]] = current_header[1].trim()
+
+    return headers
+
   sendRequest: ->
     request_options =
       url: $(rest_form.url).val()
-      headers:
-        'User-Agent': $(rest_form.user_agent).val(),
-        'Content-Type': $(rest_form.content_type).val() + ';charset=utf-8'
+      headers: this.getHeaders()
       method: current_method,
       body: ""
 
