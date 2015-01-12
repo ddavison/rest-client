@@ -164,7 +164,8 @@ class RestClientView extends ScrollView
 
     for custom_header in custom_headers
       current_header = custom_header.split(':')
-      headers[current_header[0]] = current_header[1].trim()
+      if current_header.length > 1
+        headers[current_header[0]] = current_header[1].trim()
 
     return headers
 
