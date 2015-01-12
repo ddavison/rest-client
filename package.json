@@ -1,7 +1,7 @@
 {
   "name": "rest-client",
   "main": "./lib/rest-client",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A simple REST client for your favorite editor",
   "repository": "https://github.com/ddavison/rest-client",
   "license": "MIT",
