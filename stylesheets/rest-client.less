@@ -7,6 +7,9 @@
 .rest-client {
   position: relative;
   overflow: auto;
+  .btn {
+    margin: 5px 0;
+  }
 }
 
 .rest-client-url {
@@ -24,10 +27,29 @@
   display: block;
   float: right;
   text-align: right;
+  .rest-client-clear {
+    margin-right: 10px;
+    color: @text-color-error;
+    &:hover {
+      color: lighten(@text-color-error, 10%);
+    }
+  }
+  .rest-client-send {
+    color: @text-color-success;
+    &:hover {
+      color: lighten(@text-color-success, 10%);
+    }
+  }
 }
 
 .field {
-  background-color: #cadde7;
+  color: @text-color;
+  background-color: @input-background-color;
+  border: 1px solid @input-border-color;
+  &.rest-client-user-agent {
+    padding: 0 5px;
+    margin: 10px 5px;
+  }
 }
 
 .float-right {
@@ -36,14 +58,14 @@
 
 .lnk {
   text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 
-.lnk:hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-input[type='text'],textarea {
-  border: 1px solid #888;
+input[type='text'], textarea {
+  border: 1px solid @input-border-color;
   border-radius: 2px;
+  resize: none;
 }
