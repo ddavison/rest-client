@@ -1,6 +1,13 @@
 {
   "name": "rest-client",
   "main": "./lib/rest-client",
+  "keywords": [
+    "rest",
+    "client",
+    "test",
+    "restful",
+    "http-request"
+  ],
   "version": "0.3.2",
   "description": "A simple REST client for your favorite editor",
   "repository": "https://github.com/ddavison/rest-client",
