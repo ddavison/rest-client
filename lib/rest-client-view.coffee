@@ -155,35 +155,37 @@ class RestClientView extends ScrollView
   loadFile: ->
     response = dialog.showOpenDialog({properties:['openFile']})
 
-    if response.length > 0
-      fs.readFile(response[0], (err, data) ->
+    if response == undefined
+      return
 
-        if err
-          atom.confirm(
-              message: 'Cannot load file' + file_path,
-              detailedMessage: JSON.stringify(err)
-          )
-          return
+    fs.readFile(response[0], (err, data) ->
 
-        try
-          jsonResponse = JSON.parse(data)
+      if err
+        atom.confirm(
+            message: 'Cannot load file' + file_path,
+            detailedMessage: JSON.stringify(err)
+        )
+        return
 
-          f_url = jsonResponse.url
-          f_header = jsonResponse.headers
-          f_user_agent = jsonResponse.user_agent
-          f_payload = jsonResponse.payload
-        catch err2
-          atom.confirm(
-            message: 'Cannot parse file' + file_path,
-            detailedMessage: JSON.stringify(err2)
-          )
-          return
+      try
+        jsonResponse = JSON.parse(data)
 
-        $(rest_form.url).val(f_url)
-        $(rest_form.headers).val(f_header)
-        $(rest_form.user_agent).val(f_user_agent)
-        $(rest_form.payload).val(f_payload)
-      )
+        f_url = jsonResponse.url
+        f_header = jsonResponse.headers
+        f_user_agent = jsonResponse.user_agent
+        f_payload = jsonResponse.payload
+      catch err2
+        atom.confirm(
+          message: 'Cannot parse file' + file_path,
+          detailedMessage: JSON.stringify(err2)
+        )
+        return
+
+      $(rest_form.url).val(f_url)
+      $(rest_form.headers).val(f_header)
+      $(rest_form.user_agent).val(f_user_agent)
+      $(rest_form.payload).val(f_payload)
+    )
 
   saveFile: ->
     file_path = dialog.showSaveDialog({properties:['saveFile']})
@@ -193,6 +195,14 @@ class RestClientView extends ScrollView
       'user_agent':$(rest_form.user_agent).val(),
       'payload': $(rest_form.payload).val()
       };
+
+    fs.writeFile("#{file_path}", JSON.stringify(outval), (err) ->
+      if err
+        atom.confirm(
+          message: 'Cannot save file' + file_path,
+          detailedMessage: JSON.stringify(err)
+        )
+      )
 
     fs.writeFile("#{file_path}", JSON.stringify(outval), (err) ->
       if err
