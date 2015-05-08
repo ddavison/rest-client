@@ -204,14 +204,6 @@ class RestClientView extends ScrollView
         )
       )
 
-    fs.writeFile("#{file_path}", JSON.stringify(outval), (err) ->
-      if err
-        atom.confirm(
-          message: 'Cannot save file' + file_path,
-          detailedMessage: JSON.stringify(err)
-        )
-      )
-
   clearForm: ->
     @hideLoading()
     $(rest_form.result).show()
