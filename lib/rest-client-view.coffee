@@ -26,6 +26,8 @@ rest_form =
   encode_payload: '.rest-client-encodepayload',
   decode_payload: '.rest-client-decodepayload',
   content_type: '.rest-client-content-type',
+  load_btn: '.rest-config-load',
+  save_btn: '.rest-config-save',  
   clear_btn: '.rest-client-clear',
   send_btn: '.rest-client-send',
   result: '.rest-client-result',
@@ -44,6 +46,8 @@ class RestClientView extends ScrollView
         @div class: 'block rest-client-action-btns', =>
           @div class: 'block', =>
             @div class: 'btn-group btn-group-lg', =>
+              @button class: "btn btn-lg #{rest_form.load_btn.split('.')[1]}", 'Load'
+              @button class: "btn btn-lg #{rest_form.save_btn.split('.')[1]}", 'Save'
               @button class: "btn btn-lg #{rest_form.clear_btn.split('.')[1]}", 'Clear'
               @button class: "btn btn-lg #{rest_form.send_btn.split('.')[1]}", 'Send'
 
@@ -106,6 +110,8 @@ class RestClientView extends ScrollView
           $("#{rest_form.method}-#{m}").removeClass('selected')
         $(this).addClass('selected')
         current_method = $(this).html()
+    @on 'click', rest_form.load_btn, => @loadFile()
+    @on 'click', rest_form.save_btn, => @saveFile()
 
     @on 'click', rest_form.clear_btn, => @clearForm()
     @on 'click', rest_form.send_btn,  => @sendRequest()
@@ -145,6 +151,51 @@ class RestClientView extends ScrollView
   decodePayload: ->
     decoded_payload = decodeURIComponent($(rest_form.payload).val())
     $(rest_form.payload).val(decoded_payload)
+
+  loadFile: ->
+    response = dialog.showOpenDialog({properties:['openFile']})
+
+    fs.readFile(response, (err, data) ->
+
+      #if err throw err 
+
+      jsonResponse = JSON.parse(data)
+
+      f_url = ""
+      f_header = ""
+      f_payload = ""
+
+      try
+          f_url = jsonResponse.url
+          f_header = jsonResponse.headers
+          f_payload = jsonResponse.payload
+      catch err2
+        atom.confirm(
+          message: 'Cannot load file' + file_path,
+          detailedMessage: JSON.stringify(err2)
+        )
+        return
+
+      $(rest_form.url).val(f_url)
+      $(rest_form.headers).val(f_header)
+      $(rest_form.payload).val(f_payload)
+    )
+
+  saveFile: ->
+    file_path = dialog.showSaveDialog({properties:['saveFile']})
+    outval = {
+      'url':$(rest_form.url).val(),
+      'headers':$(rest_form.headers).val(),
+      'payload': $(rest_form.payload).val()
+      };
+
+    fs.writeFile("#{file_path}", JSON.stringify(outval), (err) ->
+      if err
+        atom.confirm(
+          message: 'Cannot save file' + file_path,
+          detailedMessage: JSON.stringify(err)
+        )
+      )
 
   clearForm: ->
     @hideLoading()
