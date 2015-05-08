@@ -155,37 +155,42 @@ class RestClientView extends ScrollView
   loadFile: ->
     response = dialog.showOpenDialog({properties:['openFile']})
 
-    fs.readFile(response, (err, data) ->
+    if response.length > 0
+      fs.readFile(response[0], (err, data) ->
 
-      #if err throw err 
+        if err
+          atom.confirm(
+              message: 'Cannot load file' + file_path,
+              detailedMessage: JSON.stringify(err)
+          )
+          return
 
-      jsonResponse = JSON.parse(data)
+        try
+          jsonResponse = JSON.parse(data)
 
-      f_url = ""
-      f_header = ""
-      f_payload = ""
-
-      try
           f_url = jsonResponse.url
           f_header = jsonResponse.headers
+          f_user_agent = jsonResponse.user_agent
           f_payload = jsonResponse.payload
-      catch err2
-        atom.confirm(
-          message: 'Cannot load file' + file_path,
-          detailedMessage: JSON.stringify(err2)
-        )
-        return
+        catch err2
+          atom.confirm(
+            message: 'Cannot parse file' + file_path,
+            detailedMessage: JSON.stringify(err2)
+          )
+          return
 
-      $(rest_form.url).val(f_url)
-      $(rest_form.headers).val(f_header)
-      $(rest_form.payload).val(f_payload)
-    )
+        $(rest_form.url).val(f_url)
+        $(rest_form.headers).val(f_header)
+        $(rest_form.user_agent).val(f_user_agent)
+        $(rest_form.payload).val(f_payload)
+      )
 
   saveFile: ->
     file_path = dialog.showSaveDialog({properties:['saveFile']})
     outval = {
       'url':$(rest_form.url).val(),
       'headers':$(rest_form.headers).val(),
+      'user_agent':$(rest_form.user_agent).val(),
       'payload': $(rest_form.payload).val()
       };
 
