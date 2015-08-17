@@ -12,8 +12,8 @@ atom.deserializers.add(deserializer)
 
 module.exports =
   activate: ->
-    atom.workspace.registerOpener (filePath) ->
+    atom.workspace.addOpener (filePath) ->
       createRestClientView(uri: restClientUri) if filePath is restClientUri
 
-    atom.workspaceView.command 'rest-client:show', ->
-      atom.workspaceView.open(restClientUri)
+    atom.commands.add 'atom-workspace', 'rest-client:show', ->
+      atom.workspace.open(restClientUri)
