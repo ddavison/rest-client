@@ -47,7 +47,7 @@ class RestClientView extends ScrollView
               @button class: "btn btn-lg #{rest_form.clear_btn.split('.')[1]}", 'Clear'
               @button class: "btn btn-lg #{rest_form.send_btn.split('.')[1]}", 'Send'
 
-        @input type: 'text', class: "field native-key-bindings #{rest_form.url.split('.')[1]}"
+        @input type: 'text', class: "field native-key-bindings #{rest_form.url.split('.')[1]}", autofocus: 'true'
 
         # methods
         ## GET
