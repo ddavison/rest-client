@@ -1,4 +1,4 @@
-{$, ScrollView} = require 'atom'
+{$, ScrollView} = require 'atom-space-pen-views'
 querystring = require 'querystring'
 request = require 'request'
 fs = require 'fs'
