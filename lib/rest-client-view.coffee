@@ -135,7 +135,7 @@ class RestClientView extends ScrollView
             detailedMessage: JSON.stringify(err)
           )
         else
-          atom.workspaceView.open("/tmp/#{file_name}")
+          atom.workspace.open("/tmp/#{file_name}")
       )
 
   encodePayload: ->
