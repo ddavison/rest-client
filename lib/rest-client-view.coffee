@@ -99,7 +99,7 @@ class RestClientView extends ScrollView
           @span class: "#{rest_form.status.split('.')[1]}"
 
           @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
-          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", #{DEFAULT_RESULT}
+          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", "#{DEFAULT_RESULT}"
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
