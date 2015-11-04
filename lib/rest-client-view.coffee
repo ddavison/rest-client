@@ -125,7 +125,8 @@ class RestClientView extends ScrollView
     )(this)
 
   openInEditor: ->
-  if $(rest_form.result).text() != DEFAULT_RESULT
+  textResult = $(rest_form.result).text()
+  if [DEFAULT_RESULT, ""].indexOf(textResult) == -1
       file_name = "#{CURRENT_METHOD} - #{$(rest_form.url).val()}"
       file_name = file_name.replace(/https?:\/\//, '')
       file_name = file_name.replace(/\//g, '')
@@ -223,7 +224,6 @@ class RestClientView extends ScrollView
       JSON.stringify(JSON.parse(body), undefined, TAB_JSON_SPACES)
     else
       body
-
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
