@@ -13,7 +13,10 @@ methods = [
   'options'
 ]
 
-current_method = 'GET'
+CURRENT_METHOD = 'GET'
+DEFAULT_RESULT = 'No data yet...'
+DEFAULT_NORESPONSE = 'NO RESPONSE'
+TAB_JSON_SPACES = 4
 
 response = '' # global object for the response.
 
@@ -96,7 +99,7 @@ class RestClientView extends ScrollView
           @span class: "#{rest_form.status.split('.')[1]}"
 
           @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
-          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", 'No data yet..'
+          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", "#{DEFAULT_RESULT}"
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
@@ -105,7 +108,7 @@ class RestClientView extends ScrollView
         for m in methods
           $("#{rest_form.method}-#{m}").removeClass('selected')
         $(this).addClass('selected')
-        current_method = $(this).html()
+        CURRENT_METHOD = $(this).html()
 
     @on 'click', rest_form.clear_btn, => @clearForm()
     @on 'click', rest_form.send_btn,  => @sendRequest()
@@ -122,8 +125,9 @@ class RestClientView extends ScrollView
     )(this)
 
   openInEditor: ->
-    if $(rest_form.result).text() != 'No data yet..'
-      file_name = "#{current_method} - #{$(rest_form.url).val()}"
+  textResult = $(rest_form.result).text()
+  if [DEFAULT_RESULT, ""].indexOf(textResult) == -1
+      file_name = "#{CURRENT_METHOD} - #{$(rest_form.url).val()}"
       file_name = file_name.replace(/https?:\/\//, '')
       file_name = file_name.replace(/\//g, '')
 
@@ -152,7 +156,7 @@ class RestClientView extends ScrollView
     $(rest_form.url).val("")
     $(rest_form.headers).val("")
     $(rest_form.payload).val("")
-    $(rest_form.result).text('No data yet..')
+    $(rest_form.result).text(DEFAULT_RESULT)
     $(rest_form.status).text("")
 
   getHeaders: ->
@@ -173,7 +177,7 @@ class RestClientView extends ScrollView
     request_options =
       url: $(rest_form.url).val()
       headers: this.getHeaders()
-      method: current_method,
+      method: CURRENT_METHOD,
       body: ""
 
 
@@ -193,21 +197,33 @@ class RestClientView extends ScrollView
           when 200,201
             $(rest_form.status).removeClass('text-error')
             $(rest_form.status).addClass('text-success')
-            $(rest_form.status).text(response.statusCode + " " +response.statusMessage)
+            $(rest_form.status).text(response.statusCode + " " + response.statusMessage)
           else
             $(rest_form.status).removeClass('text-success')
             $(rest_form.status).addClass('text-error')
             $(rest_form.status).text(response.statusCode + " " +response.statusMessage)
-        $(rest_form.result).text(body)
+        $(rest_form.result).text(@processResult(body))
         @hideLoading()
       else
         $(rest_form.status).removeClass('text-success')
         $(rest_form.status).addClass('text-error')
-        $(rest_form.status).text('NO RESPONSE')
+        $(rest_form.status).text(DEFAULT_NORESPONSE)
         $(rest_form.result).text(error)
         @hideLoading()
     )
 
+  isJson: (body) ->
+    try
+      JSON.parse(body)
+      true
+    catch error
+      false
+
+  processResult: (body) ->
+    if @isJson(body)
+      JSON.stringify(JSON.parse(body), undefined, TAB_JSON_SPACES)
+    else
+      body
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
