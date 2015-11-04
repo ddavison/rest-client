@@ -16,6 +16,7 @@ methods = [
 CURRENT_METHOD = 'GET'
 DEFAULT_RESULT = 'No data yet...'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
+TAB_JSON_SPACES = 4
 
 response = '' # global object for the response.
 
@@ -200,7 +201,7 @@ class RestClientView extends ScrollView
             $(rest_form.status).removeClass('text-success')
             $(rest_form.status).addClass('text-error')
             $(rest_form.status).text(response.statusCode + " " +response.statusMessage)
-        $(rest_form.result).text(body)
+        $(rest_form.result).text(@processResult(body))
         @hideLoading()
       else
         $(rest_form.status).removeClass('text-success')
@@ -209,6 +210,19 @@ class RestClientView extends ScrollView
         $(rest_form.result).text(error)
         @hideLoading()
     )
+
+  isJson: (body) ->
+    try
+      JSON.parse(body)
+      true
+    catch error
+      false
+
+  processResult: (body) ->
+    if @isJson(body)
+      JSON.stringify(JSON.parse(body), undefined, TAB_JSON_SPACES)
+    else
+      body
 
 
   # Returns an object that can be retrieved when package is activated
