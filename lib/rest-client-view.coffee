@@ -169,17 +169,8 @@ class RestClientView extends ScrollView
       url: $(rest_form.url).val()
       headers: this.getHeaders()
       method: CURRENT_METHOD,
-      body: ""
+      body: @getRequestBody()
 
-
-    payload = $(rest_form.payload).val()
-    if payload
-      switch $(rest_form.content_type).val()
-        when "application/json"
-          json_obj = JSON.parse(payload)
-          request_options.body = JSON.stringify(json_obj)
-        else
-          request_options.body = payload
     @showLoading()
     RestClientHttp.send(request_options, @onResponse)
 
@@ -198,6 +189,20 @@ class RestClientView extends ScrollView
       @showErrorResponse(DEFAULT_NORESPONSE)
       $(rest_form.result).text(error)
       @hideLoading()
+
+  getRequestBody:
+    payload = $(rest_form.payload).val()
+    body = ""
+
+    if payload
+      switch $(rest_form.content_type).val()
+        when "application/json"
+          json_obj = JSON.parse(payload)
+          body = JSON.stringify(json_obj)
+        else
+          body = payload
+
+    body
 
   showSuccessfulResponse: (text) =>
     $(rest_form.status)
