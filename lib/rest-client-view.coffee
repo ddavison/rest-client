@@ -190,7 +190,7 @@ class RestClientView extends ScrollView
       $(rest_form.result).text(error)
       @hideLoading()
 
-  getRequestBody:
+  getRequestBody: ->
     payload = $(rest_form.payload).val()
     body = ""
 
