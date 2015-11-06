@@ -1,9 +1,9 @@
 {$, ScrollView} = require 'atom-space-pen-views'
 querystring = require 'querystring'
 request = require 'request'
-fs = require 'fs'
 
 RestClientResponse = require './rest-client-response'
+RestClientEditor = require './rest-client-editor'
 
 methods = [
   'get',
@@ -16,7 +16,6 @@ methods = [
 ]
 
 CURRENT_METHOD = 'GET'
-DEFAULT_RESULT = 'No data yet...'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 
 response = '' # global object for the response.
@@ -100,7 +99,7 @@ class RestClientView extends ScrollView
           @span class: "#{rest_form.status.split('.')[1]}"
 
           @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
-          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", "#{DEFAULT_RESULT}"
+          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", "#{RestClientResponse.DEFAULT_RESPONSE}"
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
@@ -126,22 +125,10 @@ class RestClientView extends ScrollView
     )(this)
 
   openInEditor: ->
-  textResult = $(rest_form.result).text()
-  if [DEFAULT_RESULT, ""].indexOf(textResult) == -1
-      file_name = "#{CURRENT_METHOD} - #{$(rest_form.url).val()}"
-      file_name = file_name.replace(/https?:\/\//, '')
-      file_name = file_name.replace(/\//g, '')
-
-      # ideally, i want to open it without saving a file, but i don't think that'll work due to atom limitations
-      fs.writeFile("/tmp/#{file_name}", @response, (err) ->
-        if err
-          atom.confirm(
-            message: 'Cannot save to tmp directory..',
-            detailedMessage: JSON.stringify(err)
-          )
-        else
-          atom.workspace.open("/tmp/#{file_name}")
-      )
+    textResult = $(rest_form.result).text()
+    file_name = "#{CURRENT_METHOD} - #{$(rest_form.url).val()}"
+    editor = new RestClientEditor(textResult, file_name)
+    editor.open()
 
   encodePayload: ->
     encoded_payload = encodeURIComponent($(rest_form.payload).val())
@@ -157,7 +144,7 @@ class RestClientView extends ScrollView
     $(rest_form.url).val("")
     $(rest_form.headers).val("")
     $(rest_form.payload).val("")
-    $(rest_form.result).text(DEFAULT_RESULT)
+    $(rest_form.result).text(RestClientResponse.DEFAULT_RESPONSE)
     $(rest_form.status).text("")
 
   getHeaders: ->
