@@ -1,9 +1,9 @@
 {$, ScrollView} = require 'atom-space-pen-views'
 querystring = require 'querystring'
-request = require 'request'
 
 RestClientResponse = require './rest-client-response'
 RestClientEditor = require './rest-client-editor'
+RestClientHttp = require './rest-client-http'
 
 methods = [
   'get',
@@ -15,6 +15,7 @@ methods = [
   'options'
 ]
 
+ENTER_KEY = 13
 CURRENT_METHOD = 'GET'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 
@@ -120,7 +121,7 @@ class RestClientView extends ScrollView
 
     @on 'keypress', rest_form.url, ((_this) ->
       ->
-        _this.sendRequest()  if event.keyCode is 13
+        _this.sendRequest()  if event.keyCode is ENTER_KEY
         return
     )(this)
 
@@ -131,12 +132,14 @@ class RestClientView extends ScrollView
     editor.open()
 
   encodePayload: ->
-    encoded_payload = encodeURIComponent($(rest_form.payload).val())
-    $(rest_form.payload).val(encoded_payload)
+    $(rest_form.payload).val(
+      RestClientHttp.encodePayload($(rest_form.payload).val())
+    )
 
   decodePayload: ->
-    decoded_payload = decodeURIComponent($(rest_form.payload).val())
-    $(rest_form.payload).val(decoded_payload)
+    $(rest_form.payload).val(
+      RestClientHttp.decodePayload($(rest_form.payload).val())
+    )
 
   clearForm: ->
     @hideLoading()
@@ -178,29 +181,35 @@ class RestClientView extends ScrollView
         else
           request_options.body = payload
     @showLoading()
-    request(request_options, (error, response, body) =>
-      @response = body
-      if !error
-        switch response.statusCode
-          when 200,201
-            $(rest_form.status).removeClass('text-error')
-            $(rest_form.status).addClass('text-success')
-            $(rest_form.status).text(response.statusCode + " " + response.statusMessage)
-          else
-            $(rest_form.status).removeClass('text-success')
-            $(rest_form.status).addClass('text-error')
-            $(rest_form.status).text(response.statusCode + " " +response.statusMessage)
+    RestClientHttp.send(request_options, @onResponse)
 
-        response = new RestClientResponse(body).getFormatted()
-        $(rest_form.result).text(response)
-        @hideLoading()
-      else
-        $(rest_form.status).removeClass('text-success')
-        $(rest_form.status).addClass('text-error')
-        $(rest_form.status).text(DEFAULT_NORESPONSE)
-        $(rest_form.result).text(error)
-        @hideLoading()
-    )
+  onResponse: (error, response, body) =>
+    if !error
+      switch response.statusCode
+        when 200,201,204
+          @showSuccessfulResponse(response.statusCode + " " + response.statusMessage)
+        else
+          @showErrorResponse(response.statusCode + " " +response.statusMessage)
+
+      response = new RestClientResponse(body).getFormatted()
+      $(rest_form.result).text(response)
+      @hideLoading()
+    else
+      @showErrorResponse(DEFAULT_NORESPONSE)
+      $(rest_form.result).text(error)
+      @hideLoading()
+
+  showSuccessfulResponse: (text) =>
+    $(rest_form.status)
+      .removeClass('text-error')
+      .addClass('text-success')
+      .text(text)
+
+  showErrorResponse: (text) =>
+    $(rest_form.status)
+      .removeClass('text-success')
+      .addClass('text-error')
+      .text(text)
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
