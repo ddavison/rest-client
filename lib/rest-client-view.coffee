@@ -5,16 +5,6 @@ RestClientResponse = require './rest-client-response'
 RestClientEditor = require './rest-client-editor'
 RestClientHttp = require './rest-client-http'
 
-methods = [
-  'get',
-  'post',
-  'put',
-  'patch',
-  'delete',
-  'head',
-  'options'
-]
-
 ENTER_KEY = 13
 CURRENT_METHOD = 'GET'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
@@ -56,7 +46,7 @@ class RestClientView extends ScrollView
         # methods
         ## GET
         @div class: 'btn-group btn-group-sm', =>
-          for method in methods
+          for method in RestClientHttp.METHODS
             if method is 'get'
               @button class: "btn selected #{rest_form.method.split('.')[1]}-#{method}", method.toUpperCase()
             else
@@ -104,9 +94,9 @@ class RestClientView extends ScrollView
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
-    for method in methods
+    for method in RestClientHttp.METHODS
       @on 'click', "#{rest_form.method}-#{method}", ->
-        for m in methods
+        for m in RestClientHttp.METHODS
           $("#{rest_form.method}-#{m}").removeClass('selected')
         $(this).addClass('selected')
         CURRENT_METHOD = $(this).html()

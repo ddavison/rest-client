@@ -2,6 +2,16 @@ request = require 'request'
 
 module.exports =
 class RestClientHttp
+  @METHODS: [
+    'get',
+    'post',
+    'put',
+    'patch',
+    'delete',
+    'head',
+    'options'
+  ]
+
   @encodePayload: (payload) ->
     encodeURIComponent(payload)
 
