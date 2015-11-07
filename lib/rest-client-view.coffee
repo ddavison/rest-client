@@ -1,22 +1,12 @@
 {$, ScrollView} = require 'atom-space-pen-views'
 querystring = require 'querystring'
-request = require 'request'
-fs = require 'fs'
 
 RestClientResponse = require './rest-client-response'
+RestClientEditor = require './rest-client-editor'
+RestClientHttp = require './rest-client-http'
 
-methods = [
-  'get',
-  'post',
-  'put',
-  'patch',
-  'delete',
-  'head',
-  'options'
-]
-
+ENTER_KEY = 13
 CURRENT_METHOD = 'GET'
-DEFAULT_RESULT = 'No data yet...'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 
 response = '' # global object for the response.
@@ -55,8 +45,8 @@ class RestClientView extends ScrollView
 
         # methods
         ## GET
-        @div class: 'btn-group btn-group-sm', =>
-          for method in methods
+        @div class: 'btn-group btn-group-sm rest-client-methods', =>
+          for method in RestClientHttp.METHODS
             if method is 'get'
               @button class: "btn selected #{rest_form.method.split('.')[1]}-#{method}", method.toUpperCase()
             else
@@ -100,14 +90,13 @@ class RestClientView extends ScrollView
           @span class: "#{rest_form.status.split('.')[1]}"
 
           @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
-          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", "#{DEFAULT_RESULT}"
+          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", "#{RestClientResponse.DEFAULT_RESPONSE}"
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
-    for method in methods
+    for method in RestClientHttp.METHODS
       @on 'click', "#{rest_form.method}-#{method}", ->
-        for m in methods
-          $("#{rest_form.method}-#{m}").removeClass('selected')
+        $('.rest-client-methods').children().removeClass('selected')
         $(this).addClass('selected')
         CURRENT_METHOD = $(this).html()
 
@@ -121,35 +110,25 @@ class RestClientView extends ScrollView
 
     @on 'keypress', rest_form.url, ((_this) ->
       ->
-        _this.sendRequest()  if event.keyCode is 13
+        _this.sendRequest()  if event.keyCode is ENTER_KEY
         return
     )(this)
 
   openInEditor: ->
-  textResult = $(rest_form.result).text()
-  if [DEFAULT_RESULT, ""].indexOf(textResult) == -1
-      file_name = "#{CURRENT_METHOD} - #{$(rest_form.url).val()}"
-      file_name = file_name.replace(/https?:\/\//, '')
-      file_name = file_name.replace(/\//g, '')
-
-      # ideally, i want to open it without saving a file, but i don't think that'll work due to atom limitations
-      fs.writeFile("/tmp/#{file_name}", @response, (err) ->
-        if err
-          atom.confirm(
-            message: 'Cannot save to tmp directory..',
-            detailedMessage: JSON.stringify(err)
-          )
-        else
-          atom.workspace.open("/tmp/#{file_name}")
-      )
+    textResult = $(rest_form.result).text()
+    file_name = "#{CURRENT_METHOD} - #{$(rest_form.url).val()}"
+    editor = new RestClientEditor(textResult, file_name)
+    editor.open()
 
   encodePayload: ->
-    encoded_payload = encodeURIComponent($(rest_form.payload).val())
-    $(rest_form.payload).val(encoded_payload)
+    $(rest_form.payload).val(
+      RestClientHttp.encodePayload($(rest_form.payload).val())
+    )
 
   decodePayload: ->
-    decoded_payload = decodeURIComponent($(rest_form.payload).val())
-    $(rest_form.payload).val(decoded_payload)
+    $(rest_form.payload).val(
+      RestClientHttp.decodePayload($(rest_form.payload).val())
+    )
 
   clearForm: ->
     @hideLoading()
@@ -157,7 +136,7 @@ class RestClientView extends ScrollView
     $(rest_form.url).val("")
     $(rest_form.headers).val("")
     $(rest_form.payload).val("")
-    $(rest_form.result).text(DEFAULT_RESULT)
+    $(rest_form.result).text(RestClientResponse.DEFAULT_RESPONSE)
     $(rest_form.status).text("")
 
   getHeaders: ->
@@ -179,41 +158,52 @@ class RestClientView extends ScrollView
       url: $(rest_form.url).val()
       headers: this.getHeaders()
       method: CURRENT_METHOD,
-      body: ""
+      body: @getRequestBody()
 
+    @showLoading()
+    RestClientHttp.send(request_options, @onResponse)
 
+  onResponse: (error, response, body) =>
+    if !error
+      switch response.statusCode
+        when 200,201,204
+          @showSuccessfulResponse(response.statusCode + " " + response.statusMessage)
+        else
+          @showErrorResponse(response.statusCode + " " +response.statusMessage)
+
+      response = new RestClientResponse(body).getFormatted()
+      $(rest_form.result).text(response)
+      @hideLoading()
+    else
+      @showErrorResponse(DEFAULT_NORESPONSE)
+      $(rest_form.result).text(error)
+      @hideLoading()
+
+  getRequestBody: ->
     payload = $(rest_form.payload).val()
+    body = ""
+
     if payload
       switch $(rest_form.content_type).val()
         when "application/json"
           json_obj = JSON.parse(payload)
-          request_options.body = JSON.stringify(json_obj)
+          body = JSON.stringify(json_obj)
         else
-          request_options.body = payload
-    @showLoading()
-    request(request_options, (error, response, body) =>
-      @response = body
-      if !error
-        switch response.statusCode
-          when 200,201
-            $(rest_form.status).removeClass('text-error')
-            $(rest_form.status).addClass('text-success')
-            $(rest_form.status).text(response.statusCode + " " + response.statusMessage)
-          else
-            $(rest_form.status).removeClass('text-success')
-            $(rest_form.status).addClass('text-error')
-            $(rest_form.status).text(response.statusCode + " " +response.statusMessage)
+          body = payload
 
-        response = new RestClientResponse(body).getFormatted()
-        $(rest_form.result).text(response)
-        @hideLoading()
-      else
-        $(rest_form.status).removeClass('text-success')
-        $(rest_form.status).addClass('text-error')
-        $(rest_form.status).text(DEFAULT_NORESPONSE)
-        $(rest_form.result).text(error)
-        @hideLoading()
-    )
+    body
+
+  showSuccessfulResponse: (text) =>
+    $(rest_form.status)
+      .removeClass('text-error')
+      .addClass('text-success')
+      .text(text)
+
+  showErrorResponse: (text) =>
+    $(rest_form.status)
+      .removeClass('text-success')
+      .addClass('text-error')
+      .text(text)
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

@@ -2,6 +2,8 @@ TAB_JSON_SPACES = 4
 
 module.exports =
 class RestClientResponse
+  @DEFAULT_RESPONSE = 'No data yet...'
+
   constructor: (body) ->
     @body = body
 
