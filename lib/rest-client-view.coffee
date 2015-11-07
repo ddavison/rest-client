@@ -45,7 +45,7 @@ class RestClientView extends ScrollView
 
         # methods
         ## GET
-        @div class: 'btn-group btn-group-sm', =>
+        @div class: 'btn-group btn-group-sm rest-client-methods', =>
           for method in RestClientHttp.METHODS
             if method is 'get'
               @button class: "btn selected #{rest_form.method.split('.')[1]}-#{method}", method.toUpperCase()
@@ -96,8 +96,7 @@ class RestClientView extends ScrollView
   initialize: ->
     for method in RestClientHttp.METHODS
       @on 'click', "#{rest_form.method}-#{method}", ->
-        for m in RestClientHttp.METHODS
-          $("#{rest_form.method}-#{m}").removeClass('selected')
+        $('.rest-client-methods').children().removeClass('selected')
         $(this).addClass('selected')
         CURRENT_METHOD = $(this).html()
 
