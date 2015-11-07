@@ -8,13 +8,18 @@ class RestClientEditor
 
   constructor: (text, file_name) ->
     @text = text
-    @file_name = @getFilename(file_name)
+    @file_name = @processFilename(file_name)
     @path = "/tmp/#{@file_name}"
 
   open: ->
+    openned = false
+
     if [RestClientResponse.DEFAULT_RESULT, ""].indexOf(@text) == -1
       # ideally, i want to open it without saving a file, but i don't think that'll work due to atom limitations
       fs.writeFile(@path, @text, @processOpen)
+      openned = true
+
+    openned
 
   processOpen: (err) =>
     if err
@@ -22,12 +27,8 @@ class RestClientEditor
     else
       @openOnWorkspace(@path)
 
-  getFilename: (file_name) ->
-    file_name = file_name
-        .replace(/https?:\/\//, '')
-        .replace(/\//g, '')
-
-    file_name
+  processFilename: (file_name) ->
+    file_name.replace(/https?:\/\//, '').replace(/\//g, '')
 
   showErrorOnOpen: (err) ->
     atom.confirm(
