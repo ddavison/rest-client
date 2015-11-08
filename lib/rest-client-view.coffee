@@ -6,7 +6,7 @@ RestClientEditor = require './rest-client-editor'
 RestClientHttp = require './rest-client-http'
 
 ENTER_KEY = 13
-CURRENT_METHOD = 'GET'
+current_method = 'GET'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 
 response = '' # global object for the response.
@@ -98,7 +98,7 @@ class RestClientView extends ScrollView
       @on 'click', "#{rest_form.method}-#{method}", ->
         $('.rest-client-methods').children().removeClass('selected')
         $(this).addClass('selected')
-        CURRENT_METHOD = $(this).html()
+        current_method = $(this).html()
 
     @on 'click', rest_form.clear_btn, => @clearForm()
     @on 'click', rest_form.send_btn,  => @sendRequest()
@@ -110,13 +110,13 @@ class RestClientView extends ScrollView
 
     @on 'keypress', rest_form.url, ((_this) ->
       ->
-        _this.sendRequest()  if event.keyCode is ENTER_KEY
+        _this.sendRequest() if event.keyCode is ENTER_KEY
         return
     )(this)
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
-    file_name = "#{CURRENT_METHOD} - #{$(rest_form.url).val()}"
+    file_name = "#{current_method} - #{$(rest_form.url).val()}"
     editor = new RestClientEditor(textResult, file_name)
     editor.open()
 
@@ -132,18 +132,26 @@ class RestClientView extends ScrollView
 
   clearForm: ->
     @hideLoading()
+    @setDefaultValues()
     $(rest_form.result).show()
-    $(rest_form.url).val("")
-    $(rest_form.headers).val("")
-    $(rest_form.payload).val("")
+
+  setDefaultValues: ->
+    $(rest_form.url).val('')
+    $(rest_form.headers).val('')
+    $(rest_form.payload).val('')
+    $(rest_form.status).val('')
     $(rest_form.result).text(RestClientResponse.DEFAULT_RESPONSE)
-    $(rest_form.status).text("")
 
   getHeaders: ->
     headers = {
       'User-Agent': $(rest_form.user_agent).val(),
       'Content-Type': $(rest_form.content_type).val() + ';charset=utf-8'
     }
+    headers = @getCustomHeaders(headers)
+
+    return headers
+
+  getCustomHeaders: (headers) ->
     custom_headers = $(rest_form.headers).val().split('\n')
 
     for custom_header in custom_headers
@@ -151,13 +159,13 @@ class RestClientView extends ScrollView
       if current_header.length > 1
         headers[current_header[0]] = current_header[1].trim()
 
-    return headers
+    headers
 
   sendRequest: ->
     request_options =
       url: $(rest_form.url).val()
       headers: this.getHeaders()
-      method: CURRENT_METHOD,
+      method: current_method,
       body: @getRequestBody()
 
     @showLoading()
