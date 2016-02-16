@@ -41,7 +41,7 @@ class RestClientView extends ScrollView
               @button class: "btn btn-lg #{rest_form.clear_btn.split('.')[1]}", 'Clear'
               @button class: "btn btn-lg #{rest_form.send_btn.split('.')[1]}", 'Send'
 
-        @input type: 'text', class: "field native-key-bindings #{rest_form.url.split('.')[1]}", autofocus: 'true'
+        @input type: 'text', class: "field #{rest_form.url.split('.')[1]}", autofocus: 'true'
 
         # methods
         ## GET
@@ -59,7 +59,7 @@ class RestClientView extends ScrollView
           @div class: 'btn-group btn-group-lg', =>
             @button class: 'btn selected', 'Raw'
 
-          @textarea class: "field native-key-bindings #{rest_form.headers.split('.')[1]}", rows: 7
+          @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
           @strong 'User-Agent'
           @input class: "field #{rest_form.user_agent.split('.')[1]}", value: 'atom-rest-client'
 
@@ -72,7 +72,7 @@ class RestClientView extends ScrollView
           @div class: 'btn-group btn-group-lg', =>
             @button class: 'btn selected', 'Raw'
 
-          @textarea class: "field native-key-bindings #{rest_form.payload.split('.')[1]}", rows: 7
+          @textarea class: "field #{rest_form.payload.split('.')[1]}", rows: 7
 
         # Content-Type
         @select class: "list-group #{rest_form.content_type.split('.')[1]}", =>
@@ -90,7 +90,7 @@ class RestClientView extends ScrollView
           @span class: "#{rest_form.status.split('.')[1]}"
 
           @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
-          @pre class: "native-key-bindings #{rest_form.result.split('.')[1]}", "#{RestClientResponse.DEFAULT_RESPONSE}"
+          @pre class: "#{rest_form.result.split('.')[1]}", "#{RestClientResponse.DEFAULT_RESPONSE}"
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
