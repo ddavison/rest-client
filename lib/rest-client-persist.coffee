@@ -2,27 +2,19 @@ fs = require 'fs'
 
 module.exports =
 class RestClientPersist
-  constructor: (path, data = {}) ->
+  constructor: (path, data) ->
     @path = path
     @data = data
 
-  load: ->
-    fs.readFile(@path, @processRead)
+  load: (callback) ->
+    fs.readFile(@path, callback)
 
   save: ->
     fs.writeFile("#{@path}", JSON.stringify(@data), @showErrorOnPersist)
 
-  processRead: (readError, data) =>
-    if readError
-      return @showErrorOnPersist(readError)
-
-    try
-      @data = JSON.parse(data)
-    catch jsonError
-      return @showErrorOnPersist(jsonError)
-
-  showErrorOnPersist: (err) ->
-    atom.confirm(
-      message: 'Cannot save file: ' + @path,
-      detailedMessage: JSON.stringify(err)
-    )
+  showErrorOnPersist: (err) =>
+    if err
+      atom.confirm(
+        message: 'Cannot save file: ' + @path,
+        detailedMessage: JSON.stringify(err)
+      )
