@@ -46,8 +46,7 @@ class RestClientView extends ScrollView
         @input type: 'text', class: "field #{rest_form.url.split('.')[1]}", autofocus: 'true'
 
         # methods
-        ## GET
-        @div class: 'btn-group btn-group-sm rest-client-methods', =>
+        @div class: 'btn-group btn-group-sm', =>
           for method in RestClientHttp.METHODS
             if method is 'get'
               @button class: "btn selected #{rest_form.method.split('.')[1]}-#{method}", method.toUpperCase()
@@ -104,9 +103,10 @@ class RestClientView extends ScrollView
 
     for method in RestClientHttp.METHODS
       @on 'click', "#{rest_form.method}-#{method}", ->
-        $('.rest-client-methods').children().removeClass('selected')
-        $(this).addClass('selected')
-        current_method = $(this).html()
+        $this = $(this)
+        $this.siblings().removeClass('selected')
+        $this.addClass('selected')
+        current_method = $this.html()
 
     @on 'click', rest_form.clear_btn, => @clearForm()
     @on 'click', rest_form.send_btn,  => @sendRequest()
@@ -183,10 +183,10 @@ class RestClientView extends ScrollView
   onResponse: (error, response, body) =>
     if !error
       switch response.statusCode
-        when 200,201,204
+        when 200, 201, 204
           @showSuccessfulResponse(response.statusCode + " " + response.statusMessage)
         else
-          @showErrorResponse(response.statusCode + " " +response.statusMessage)
+          @showErrorResponse(response.statusCode + " " + response.statusMessage)
 
       response = new RestClientResponse(body).getFormatted()
       $(rest_form.result).text(response)
