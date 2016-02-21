@@ -1,9 +1,11 @@
 {$, ScrollView} = require 'atom-space-pen-views'
+{Emitter} = require 'atom'
 querystring = require 'querystring'
 
 RestClientResponse = require './rest-client-response'
 RestClientEditor = require './rest-client-editor'
 RestClientHttp = require './rest-client-http'
+RestClientEvent = require './rest-client-event'
 
 ENTER_KEY = 13
 current_method = 'GET'
@@ -94,6 +96,12 @@ class RestClientView extends ScrollView
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
+    @emitter = new Emitter
+    @subscribeToEvents()
+  subscribeToEvents: ->
+    @emitter.on RestClientEvent.NEW_REQUEST, @showLoading
+    @emitter.on RestClientEvent.REQUEST_FINISHED, @hideLoading
+
     for method in RestClientHttp.METHODS
       @on 'click', "#{rest_form.method}-#{method}", ->
         $('.rest-client-methods').children().removeClass('selected')
@@ -168,7 +176,8 @@ class RestClientView extends ScrollView
       method: current_method,
       body: @getRequestBody()
 
-    @showLoading()
+    @emitter.emit RestClientEvent.NEW_REQUEST, request_options
+
     RestClientHttp.send(request_options, @onResponse)
 
   onResponse: (error, response, body) =>
@@ -181,11 +190,11 @@ class RestClientView extends ScrollView
 
       response = new RestClientResponse(body).getFormatted()
       $(rest_form.result).text(response)
-      @hideLoading()
     else
       @showErrorResponse(DEFAULT_NORESPONSE)
       $(rest_form.result).text(error)
-      @hideLoading()
+
+    @emitter.emit RestClientEvent.REQUEST_FINISHED, response
 
   getRequestBody: ->
     payload = $(rest_form.payload).val()
