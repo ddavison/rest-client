@@ -6,6 +6,7 @@ RestClientResponse = require './rest-client-response'
 RestClientEditor = require './rest-client-editor'
 RestClientHttp = require './rest-client-http'
 RestClientEvent = require './rest-client-event'
+RestClientRecentRequest = require './rest-client-recent-request'
 
 ENTER_KEY = 13
 current_method = 'GET'
@@ -30,6 +31,10 @@ rest_form =
   open_in_editor: '.rest-client-open-in-editor'
   loading: '.rest-client-loading-icon'
 
+recent_requests =
+  block: '#rest-client-recent'
+  button: '#rest-client-recent-toggle'
+  list: '#rest-client-recent-requests'
 
 module.exports =
 class RestClientView extends ScrollView
@@ -52,6 +57,11 @@ class RestClientView extends ScrollView
               @button class: "btn selected #{rest_form.method.split('.')[1]}-#{method}", method.toUpperCase()
             else
               @button class: "btn #{rest_form.method.split('.')[1]}-#{method}", method.toUpperCase()
+
+        # Recent requests
+        @div id: "#{recent_requests.block.split('#')[1]}", =>
+          @button id: "#{recent_requests.button.split('#')[1]}", class: "btn", 'Recent requests'
+          @ul id: "#{recent_requests.list.split('#')[1]}", style: 'display: none;'
 
         # Headers
         @div class: 'rest-client-headers-container', =>
@@ -95,9 +105,19 @@ class RestClientView extends ScrollView
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
+    @RECENT_REQUESTS_PATH = "#{atom.packages.resolvePackagePath('rest-client')}/recent.json"
+
+    @recentRequests = new RestClientRecentRequest(@RECENT_REQUESTS_PATH)
+    @recentRequests.initPath()
+
     @emitter = new Emitter
     @subscribeToEvents()
+
+    @recentRequests.load(@loadRecentRequestsInView)
+
   subscribeToEvents: ->
+    @emitter.on RestClientEvent.NEW_REQUEST, @recentRequests.save
+    @emitter.on RestClientEvent.NEW_REQUEST, @addRecentRequestInView
     @emitter.on RestClientEvent.NEW_REQUEST, @showLoading
     @emitter.on RestClientEvent.REQUEST_FINISHED, @hideLoading
 
@@ -121,6 +141,8 @@ class RestClientView extends ScrollView
         _this.sendRequest() if event.keyCode is ENTER_KEY
         return
     )(this)
+
+    @on 'click', recent_requests.button, => @toggleRecentRequests()
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
@@ -221,6 +243,33 @@ class RestClientView extends ScrollView
       .removeClass('text-success')
       .addClass('text-error')
       .text(text)
+
+  loadRecentRequestsInView: (err, requests) =>
+    if err
+      console.log('Recent requests couldn\'t be loaded')
+      return
+
+    @recentRequests.update(JSON.parse(requests))
+    @addRecentRequestsInView(@recentRequests.get())
+
+  toggleRecentRequests: ->
+    $(recent_requests.list).toggle()
+    $(recent_requests.button).toggleClass('selected')
+
+  addRecentRequestsInView: (requests) ->
+    if not requests?
+        return
+
+    for request in requests
+      @addRecentRequestInView(request)
+
+  addRecentRequestInView: (data) =>
+    $li = $('<li>')
+    $li.text([data.method, data.url].join(' - '))
+    $(recent_requests.list).prepend($li)
+    $(recent_requests.list).children()
+      .slice(@recentRequests.RECENT_REQUESTS_LIMIT)
+      .detach()
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
