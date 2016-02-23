@@ -205,18 +205,21 @@ class RestClientView extends ScrollView
 
   onResponse: (error, response, body) =>
     if !error
+      statusMessage = response.statusCode + " " + response.statusMessage
+
       switch response.statusCode
         when 200, 201, 204
-          @showSuccessfulResponse(response.statusCode + " " + response.statusMessage)
+          @showSuccessfulResponse(statusMessage)
         else
-          @showErrorResponse(response.statusCode + " " + response.statusMessage)
+          @showErrorResponse(statusMessage)
 
       response = new RestClientResponse(body).getFormatted()
-      $(rest_form.result).text(response)
+      result = response
     else
       @showErrorResponse(DEFAULT_NORESPONSE)
-      $(rest_form.result).text(error)
+      result = error
 
+    $(rest_form.result).text(result)
     @emitter.emit RestClientEvent.REQUEST_FINISHED, response
 
   getRequestBody: ->
