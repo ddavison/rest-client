@@ -8,6 +8,7 @@ RestClientHttp = require './rest-client-http'
 RestClientEvent = require './rest-client-event'
 RestClientRecentRequest = require './rest-client-recent-request'
 
+PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
 current_method = 'GET'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
@@ -105,7 +106,7 @@ class RestClientView extends ScrollView
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
-    @RECENT_REQUESTS_PATH = "#{atom.packages.resolvePackagePath('rest-client')}/recent.json"
+    @RECENT_REQUESTS_PATH = "#{PACKAGE_PATH}/recent.json"
 
     @recentRequests = new RestClientRecentRequest(@RECENT_REQUESTS_PATH)
     @recentRequests.initPath()
