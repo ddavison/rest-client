@@ -9,6 +9,7 @@ class RestClientRecentRequest
 
   constructor: (path) ->
     @path = path
+    @initPath()
 
   initPath: ->
     try
