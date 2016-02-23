@@ -193,7 +193,14 @@ class RestClientView extends ScrollView
     headers
 
   sendRequest: ->
-    request_options =
+    request_options = @getRequestOptions()
+
+    if request_options.url
+      @emitter.emit RestClientEvent.NEW_REQUEST, request_options
+      RestClientHttp.send(request_options, @onResponse)
+
+  getRequestOptions: ->
+    options =
       url: $(rest_form.url).val()
       headers: this.getHeaders()
       method: current_method,
