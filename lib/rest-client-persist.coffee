@@ -2,15 +2,37 @@ fs = require 'fs'
 
 module.exports =
 class RestClientPersist
-  constructor: (path, data) ->
+  REQUESTS_LIMIT: 5
+  requests: []
+
+  constructor: (path) ->
     @path = path
-    @data = data
+    @initPath()
 
   load: (callback) ->
     fs.readFile(@path, callback)
 
-  save: ->
-    fs.writeFile("#{@path}", JSON.stringify(@data), @showErrorOnPersist)
+  save: (request) =>
+    @requests.unshift(request)
+    @requests = @requests.slice(0, @REQUESTS_LIMIT)
+    @saveFile()
+
+  initPath: ->
+    try
+      stat = fs.lstatSync(@path)
+      if !stat.isFile()
+        @saveFile()
+    catch statErr
+        @saveFile()
+
+  saveFile: ->
+    fs.writeFile("#{@path}", JSON.stringify(@requests), @showErrorOnPersist)
+
+  update: (requests) ->
+    @requests = requests
+
+  get: ->
+    @requests
 
   showErrorOnPersist: (err) =>
     if err
