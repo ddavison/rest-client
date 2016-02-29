@@ -33,6 +33,7 @@ rest_form =
   open_in_editor: '.rest-client-open-in-editor'
   loading: '.rest-client-loading-icon'
   request_link: '.rest-client-request-link'
+  request_link_remove: '.rest-client-request-link-remove'
 
 recent_requests =
   block: '#rest-client-recent'
@@ -166,6 +167,7 @@ class RestClientView extends ScrollView
     @on 'click', saved_requests.button, => @toggleRequests(saved_requests)
 
     $('body').on 'click', rest_form.request_link, @loadRequest
+    $('body').on 'click', rest_form.request_link_remove, @removeSavedRequest
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
@@ -225,6 +227,14 @@ class RestClientView extends ScrollView
     if @lastRequest?
       @savedRequests.save(@lastRequest)
       @addRequestItem(saved_requests.list, @lastRequest)
+
+  removeSavedRequest: (e) =>
+    $target = $(e.currentTarget)
+    request = $target
+        .siblings(rest_form.request_link)
+        .data('request')
+    @savedRequests.remove(request)
+    $target.parent().remove()
 
   getRequestOptions: ->
     options =
@@ -313,12 +323,20 @@ class RestClientView extends ScrollView
 
   addRequestItem: (target, data) =>
     $li = $('<li>')
-    $li.html(
+    $li.append(
       $('<a>').text([data.method, data.url].join(' - '))
         .attr('href', '#request')
         .addClass(rest_form.request_link.split('.')[1])
         .attr('data-request', JSON.stringify(data))
     )
+
+    if target == saved_requests.list
+      $li.append(
+        $('<a>').html($('<span>').addClass('icon icon-x'))
+          .attr('href', '#remove')
+          .addClass(rest_form.request_link_remove.split('.')[1])
+      )
+
     $(target).prepend($li)
     $(target).children()
       .slice(@recentRequests.REQUESTS_LIMIT)

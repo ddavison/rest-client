@@ -34,6 +34,18 @@ class RestClientPersist
   get: ->
     @requests
 
+  remove: (removed_request) ->
+    for request, index in @requests
+      if @requestEquals(removed_request, request)
+        @requests.splice(index, 1)
+        @saveFile()
+        break
+
+  requestEquals: (request1, request2) ->
+      return (request1.url == request2.url and
+              request1.method == request2.method)
+          
+
   showErrorOnPersist: (err) =>
     if err
       atom.confirm(
