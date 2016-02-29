@@ -6,7 +6,7 @@ RestClientResponse = require './rest-client-response'
 RestClientEditor = require './rest-client-editor'
 RestClientHttp = require './rest-client-http'
 RestClientEvent = require './rest-client-event'
-RestClientRecentRequest = require './rest-client-recent-request'
+RestClientPersist = require './rest-client-persist'
 
 PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
@@ -108,8 +108,7 @@ class RestClientView extends ScrollView
   initialize: ->
     @RECENT_REQUESTS_PATH = "#{PACKAGE_PATH}/recent.json"
 
-    @recentRequests = new RestClientRecentRequest(@RECENT_REQUESTS_PATH)
-    @recentRequests.initPath()
+    @recentRequests = new RestClientPersist(@RECENT_REQUESTS_PATH)
 
     @emitter = new Emitter
     @subscribeToEvents()
@@ -118,7 +117,7 @@ class RestClientView extends ScrollView
 
   subscribeToEvents: ->
     @emitter.on RestClientEvent.NEW_REQUEST, @recentRequests.save
-    @emitter.on RestClientEvent.NEW_REQUEST, @addRecentRequestInView
+    @emitter.on RestClientEvent.NEW_REQUEST, @addRecentRequestItem
     @emitter.on RestClientEvent.NEW_REQUEST, @showLoading
     @emitter.on RestClientEvent.REQUEST_FINISHED, @hideLoading
 
@@ -143,7 +142,7 @@ class RestClientView extends ScrollView
         return
     )(this)
 
-    @on 'click', recent_requests.button, => @toggleRecentRequests()
+    @on 'click', recent_requests.button, => @toggleRequests(recent_requests)
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
@@ -206,10 +205,6 @@ class RestClientView extends ScrollView
       method: current_method,
       body: @getRequestBody()
 
-    @emitter.emit RestClientEvent.NEW_REQUEST, request_options
-
-    RestClientHttp.send(request_options, @onResponse)
-
   onResponse: (error, response, body) =>
     if !error
       statusMessage = response.statusCode + " " + response.statusMessage
@@ -261,27 +256,43 @@ class RestClientView extends ScrollView
       return
 
     @recentRequests.update(JSON.parse(requests))
-    @addRecentRequestsInView(@recentRequests.get())
+    @addRequestsInView(recent_requests.list, @recentRequests.get())
 
-  toggleRecentRequests: ->
-    $(recent_requests.list).toggle()
-    $(recent_requests.button).toggleClass('selected')
 
-  addRecentRequestsInView: (requests) ->
+  toggleRequests: (target) ->
+    $(target.list).toggle()
+    $(target.button).toggleClass('selected')
+
+  addRequestsInView: (target, requests) ->
     if not requests?
         return
 
     for request in requests
-      @addRecentRequestInView(request)
+      @addRequestItem(target, request)
 
-  addRecentRequestInView: (data) =>
+  addRequestItem: (target, data) =>
     $li = $('<li>')
-    $li.text([data.method, data.url].join(' - '))
-    $(recent_requests.list).prepend($li)
-    $(recent_requests.list).children()
-      .slice(@recentRequests.RECENT_REQUESTS_LIMIT)
+    $li.html(
+      $('<a>').text([data.method, data.url].join(' - '))
+        .attr('href', '#request')
+        .addClass(rest_form.request_link.split('.')[1])
+        .attr('data-request', JSON.stringify(data))
+    )
+    $(target).prepend($li)
+    $(target).children()
+      .slice(@recentRequests.REQUESTS_LIMIT)
       .detach()
 
+  fillInRequest: (request) ->
+    $(rest_form.url).val(request.url)
+    $(rest_form.method).val(request.method)
+    $(rest_form.payload).val(request.payload)
+    $(rest_form.headers).val(request.headers)
+    $(rest_form.user_agent).val(request.headers.user_agent)
+    $(rest_form.content_type).val(request.headers.content_type)
+
+  addRecentRequestItem: (data) =>
+    @addRequestItem(recent_requests.list, data)
   # Returns an object that can be retrieved when package is activated
   serialize: ->
     deserializer: @constructor.name
