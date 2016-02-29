@@ -291,9 +291,7 @@ class RestClientView extends ScrollView
 
   loadRequest: (e) =>
     request = $(e.currentTarget).data('request')
-
     @fillInRequest(request)
-    @sendRequest()
 
   loadRecentRequestsInView: (err, requests) =>
     if err
