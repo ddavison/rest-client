@@ -11,6 +11,7 @@ RestClientPersist = require './rest-client-persist'
 PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
 DEFAULT_NORESPONSE = 'NO RESPONSE'
+DEFAULT_REQUESTS_LIMIT = 10
 current_method = 'GET'
 
 response = '' # global object for the response.
@@ -339,7 +340,7 @@ class RestClientView extends ScrollView
 
     $(target).prepend($li)
     $(target).children()
-      .slice(@recentRequests.REQUESTS_LIMIT)
+      .slice(DEFAULT_REQUESTS_LIMIT)
       .detach()
 
   fillInRequest: (request) ->

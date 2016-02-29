@@ -2,7 +2,6 @@ fs = require 'fs'
 
 module.exports =
 class RestClientPersist
-  REQUESTS_LIMIT: 5
   requests: []
 
   constructor: (path) ->
