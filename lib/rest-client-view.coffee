@@ -10,8 +10,8 @@ RestClientPersist = require './rest-client-persist'
 
 PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
-current_method = 'GET'
 DEFAULT_NORESPONSE = 'NO RESPONSE'
+current_method = 'GET'
 
 response = '' # global object for the response.
 
@@ -26,16 +26,23 @@ rest_form =
   content_type: '.rest-client-content-type',
   clear_btn: '.rest-client-clear',
   send_btn: '.rest-client-send',
+  save_btn: '.rest-client-save',
   result: '.rest-client-result',
   status: '.rest-client-status',
   user_agent: '.rest-client-user-agent',
   open_in_editor: '.rest-client-open-in-editor'
   loading: '.rest-client-loading-icon'
+  request_link: '.rest-client-request-link'
 
 recent_requests =
   block: '#rest-client-recent'
   button: '#rest-client-recent-toggle'
   list: '#rest-client-recent-requests'
+
+saved_requests =
+  block: '#rest-client-saved'
+  button: '#rest-client-saved-toggle'
+  list: '#rest-client-saved-requests'
 
 module.exports =
 class RestClientView extends ScrollView
@@ -46,6 +53,7 @@ class RestClientView extends ScrollView
         @div class: 'block rest-client-action-btns', =>
           @div class: 'block', =>
             @div class: 'btn-group btn-group-lg', =>
+              @button class: "btn btn-lg #{rest_form.save_btn.split('.')[1]}", 'Save'
               @button class: "btn btn-lg #{rest_form.clear_btn.split('.')[1]}", 'Clear'
               @button class: "btn btn-lg #{rest_form.send_btn.split('.')[1]}", 'Send'
 
@@ -63,6 +71,11 @@ class RestClientView extends ScrollView
         @div id: "#{recent_requests.block.split('#')[1]}", =>
           @button id: "#{recent_requests.button.split('#')[1]}", class: "btn", 'Recent requests'
           @ul id: "#{recent_requests.list.split('#')[1]}", style: 'display: none;'
+
+        # Saved requests
+        @div id: "#{saved_requests.block.split('#')[1]}", =>
+          @button id: "#{saved_requests.button.split('#')[1]}", class: "btn", 'Saved requests'
+          @ul id: "#{saved_requests.list.split('#')[1]}", style: 'display: none;'
 
         # Headers
         @div class: 'rest-client-headers-container', =>
@@ -106,19 +119,25 @@ class RestClientView extends ScrollView
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
+    @COLLECTIONS_PATH = "#{PACKAGE_PATH}/collections.json"
     @RECENT_REQUESTS_PATH = "#{PACKAGE_PATH}/recent.json"
 
+    @lastRequest = null
+
     @recentRequests = new RestClientPersist(@RECENT_REQUESTS_PATH)
+    @savedRequests = new RestClientPersist(@COLLECTIONS_PATH)
 
     @emitter = new Emitter
     @subscribeToEvents()
 
     @recentRequests.load(@loadRecentRequestsInView)
+    @savedRequests.load(@loadSavedRequestsInView)
 
   subscribeToEvents: ->
     @emitter.on RestClientEvent.NEW_REQUEST, @recentRequests.save
     @emitter.on RestClientEvent.NEW_REQUEST, @addRecentRequestItem
     @emitter.on RestClientEvent.NEW_REQUEST, @showLoading
+    @emitter.on RestClientEvent.NEW_REQUEST, @setLastRequest
     @emitter.on RestClientEvent.REQUEST_FINISHED, @hideLoading
 
     for method in RestClientHttp.METHODS
@@ -130,6 +149,7 @@ class RestClientView extends ScrollView
 
     @on 'click', rest_form.clear_btn, => @clearForm()
     @on 'click', rest_form.send_btn,  => @sendRequest()
+    @on 'click', rest_form.save_btn,  => @saveRequest()
 
     @on 'click', rest_form.encode_payload, => @encodePayload()
     @on 'click', rest_form.decode_payload, => @decodePayload()
@@ -143,6 +163,9 @@ class RestClientView extends ScrollView
     )(this)
 
     @on 'click', recent_requests.button, => @toggleRequests(recent_requests)
+    @on 'click', saved_requests.button, => @toggleRequests(saved_requests)
+
+    $('body').on 'click', rest_form.request_link, @loadRequest
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
@@ -198,6 +221,11 @@ class RestClientView extends ScrollView
       @emitter.emit RestClientEvent.NEW_REQUEST, request_options
       RestClientHttp.send(request_options, @onResponse)
 
+  saveRequest: ->
+    if @lastRequest?
+      @savedRequests.save(@lastRequest)
+      @addRequestItem(saved_requests.list, @lastRequest)
+
   getRequestOptions: ->
     options =
       url: $(rest_form.url).val()
@@ -250,6 +278,12 @@ class RestClientView extends ScrollView
       .addClass('text-error')
       .text(text)
 
+  loadRequest: (e) =>
+    request = $(e.currentTarget).data('request')
+
+    @fillInRequest(request)
+    @sendRequest()
+
   loadRecentRequestsInView: (err, requests) =>
     if err
       console.log('Recent requests couldn\'t be loaded')
@@ -258,6 +292,13 @@ class RestClientView extends ScrollView
     @recentRequests.update(JSON.parse(requests))
     @addRequestsInView(recent_requests.list, @recentRequests.get())
 
+  loadSavedRequestsInView: (err, requests) =>
+    if err
+      console.log('Saved requests couldn\'t be loaded')
+      return
+
+    @savedRequests.update(JSON.parse(requests))
+    @addRequestsInView(saved_requests.list, @savedRequests.get())
 
   toggleRequests: (target) ->
     $(target.list).toggle()
@@ -293,6 +334,10 @@ class RestClientView extends ScrollView
 
   addRecentRequestItem: (data) =>
     @addRequestItem(recent_requests.list, data)
+
+  setLastRequest: (request) =>
+    @lastRequest = request
+
   # Returns an object that can be retrieved when package is activated
   serialize: ->
     deserializer: @constructor.name
