@@ -12,6 +12,7 @@ PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 DEFAULT_REQUESTS_LIMIT = 10
+DEFAULT_HEADERS = ['User-Agent', 'Content-Type']
 current_method = 'GET'
 
 response = '' # global object for the response.
@@ -345,15 +346,28 @@ class RestClientView extends ScrollView
     $(rest_form.url).val(request.url)
     $(rest_form.method).val(request.method)
     $(rest_form.payload).val(request.payload)
-    $(rest_form.headers).val(request.headers)
-    $(rest_form.user_agent).val(request.headers.user_agent)
-    $(rest_form.content_type).val(request.headers.content_type)
+    $(rest_form.headers).val(@getHeadersAsString(request.headers))
+    $(rest_form.user_agent).val(request.headers['User-Agent'])
+    $(rest_form.content_type).val(request.headers['Content-Type'])
 
   addRecentRequestItem: (data) =>
     @addRequestItem(recent_requests.list, data)
 
   setLastRequest: (request) =>
     @lastRequest = request
+
+  getHeadersAsString: (headers)  ->
+    output = ''
+
+    for header, value of headers
+        if not @isDefaultHeader(header)
+          output = [header, value].join(': ')
+
+    return output
+
+  isDefaultHeader: (header) ->
+    return DEFAULT_HEADERS.indexOf(header) != -1
+
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
