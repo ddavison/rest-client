@@ -13,6 +13,7 @@ ENTER_KEY = 13
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 DEFAULT_REQUESTS_LIMIT = 10
 DEFAULT_HEADERS = ['User-Agent', 'Content-Type']
+RECENT_REQUESTS_FILE_LIMIT = 5
 current_method = 'GET'
 
 response = '' # global object for the response.
@@ -128,6 +129,7 @@ class RestClientView extends ScrollView
     @lastRequest = null
 
     @recentRequests = new RestClientPersist(@RECENT_REQUESTS_PATH)
+    @recentRequests.setRequestFileLimit(RECENT_REQUESTS_FILE_LIMIT)
     @savedRequests = new RestClientPersist(@COLLECTIONS_PATH)
 
     @emitter = new Emitter

@@ -2,7 +2,9 @@ fs = require 'fs'
 
 module.exports =
 class RestClientPersist
+  REQUEST_FILE_LIMIT: 100
   requests: []
+  requestFileLimit: @REQUEST_FILE_LIMIT
 
   constructor: (path) ->
     @path = path
@@ -25,12 +27,20 @@ class RestClientPersist
         @saveFile()
 
   saveFile: ->
-    fs.writeFile("#{@path}", JSON.stringify(@requests), @showErrorOnPersist)
+    requestsToBeSaved = @get(@requestFileLimit)
+    fs.writeFile(
+      "#{@path}",
+      JSON.stringify(requestsToBeSaved),
+      @showErrorOnPersist
+    )
 
   update: (requests) ->
     @requests = requests
 
-  get: ->
+  get: (limit = false) ->
+    if limit
+      return @requests.slice(0, limit)
+
     @requests
 
   remove: (removed_request) ->
@@ -51,3 +61,13 @@ class RestClientPersist
         message: 'Cannot save file: ' + @path,
         detailedMessage: JSON.stringify(err)
       )
+
+  getRequestFileLimit: () ->
+    return @requestFileLimit
+
+  setRequestFileLimit: (limit) ->
+    @requestFileLimit = limit
+
+  clear: ->
+    @requests = []
+    @saveFile()
