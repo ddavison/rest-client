@@ -363,7 +363,7 @@ class RestClientView extends ScrollView
 
     for header, value of headers
         if not @isDefaultHeader(header)
-          output = [header, value].join(': ')
+          output = output.concat(header + ': ' + value + '\n')
 
     return output
 
