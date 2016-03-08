@@ -346,7 +346,7 @@ class RestClientView extends ScrollView
 
   fillInRequest: (request) ->
     $(rest_form.url).val(request.url)
-    $(rest_form.method).val(request.method)
+    @setMethodAsSelected(request.method)
     $(rest_form.payload).val(request.payload)
     $(rest_form.headers).val(@getHeadersAsString(request.headers))
     $(rest_form.user_agent).val(request.headers['User-Agent'])
@@ -366,6 +366,11 @@ class RestClientView extends ScrollView
           output = output.concat(header + ': ' + value + '\n')
 
     return output
+
+  setMethodAsSelected: (method) ->
+    $method = $(rest_form.method + '-' + method.toLowerCase())
+    $method.siblings().removeClass('selected')
+    $method.addClass('selected')
 
   isDefaultHeader: (header) ->
     return DEFAULT_HEADERS.indexOf(header) != -1
