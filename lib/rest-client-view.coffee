@@ -97,6 +97,7 @@ class RestClientView extends ScrollView
           @h5 'Payload'
 
           @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
+          @div class: "buffer float-right", '|'
           @div class: "text-info lnk float-right #{rest_form.encode_payload.split('.')[1]}", 'Encode payload'
           @div class: 'btn-group btn-group-lg', =>
             @button class: 'btn selected', 'Raw'
