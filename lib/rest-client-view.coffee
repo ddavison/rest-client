@@ -369,8 +369,6 @@ class RestClientView extends ScrollView
 
   setMethodAsSelected: (method) ->
     $method = $(rest_form.method + '-' + method.toLowerCase())
-    $method.siblings().removeClass('selected')
-    $method.addClass('selected')
     $method.click()
 
   isDefaultHeader: (header) ->
