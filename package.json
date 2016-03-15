@@ -8,7 +8,7 @@
     "restful",
     "http-request"
   ],
-  "version": "0.5.1",
+  "version": "1.0.0",
   "description": "A simple REST client for your favorite editor",
   "repository": "https://github.com/ddavison/rest-client",
   "license": "MIT",
