@@ -11,7 +11,25 @@ deserializer =
 atom.deserializers.add(deserializer)
 
 module.exports =
+  config:
+    request_collections_path:
+      title: 'Request Collections path'
+      description: 'Path for the file storing request collections'
+      type: 'string'
+      default: "#{atom.packages.resolvePackagePath('rest-client')}/collections.json"
+    recent_requests_path:
+      title: 'Recent requests path'
+      description: 'Path for the file storing recent requests'
+      type: 'string'
+      default: "#{atom.packages.resolvePackagePath('rest-client')}/recent.json"
+    recent_requests_limit:
+      title: 'Recent Requests limit'
+      description: 'number of recent requests to save'
+      type: 'integer'
+      default: 5
+
   activate: ->
+    # TODO Config not accessible in view due to addOpener
     atom.workspace.addOpener (filePath) ->
       createRestClientView(uri: restClientUri) if filePath is restClientUri
 
