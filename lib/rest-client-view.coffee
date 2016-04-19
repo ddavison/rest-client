@@ -33,6 +33,7 @@ rest_form =
   result: '.rest-client-result',
   status: '.rest-client-status',
   user_agent: '.rest-client-user-agent',
+  strict_ssl: '.rest-client-strict-ssl',
   open_in_editor: '.rest-client-open-in-editor'
   loading: '.rest-client-loading-icon'
   request_link: '.rest-client-request-link'
@@ -91,6 +92,8 @@ class RestClientView extends ScrollView
           @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
           @strong 'User-Agent'
           @input class: "field #{rest_form.user_agent.split('.')[1]}", value: 'atom-rest-client'
+          @strong 'Strict SSL'
+          @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
 
         # Payload
         @div class: 'rest-client-payload-container', =>
@@ -246,6 +249,7 @@ class RestClientView extends ScrollView
       url: $(rest_form.url).val()
       headers: this.getHeaders()
       method: current_method,
+      strictSSL: $(rest_form.strict_ssl).is(':checked'),
       body: @getRequestBody()
 
   onResponse: (error, response, body) =>
