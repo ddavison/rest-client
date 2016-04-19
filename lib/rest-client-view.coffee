@@ -92,7 +92,7 @@ class RestClientView extends ScrollView
           @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
           @strong 'User-Agent'
           @input class: "field #{rest_form.user_agent.split('.')[1]}", value: 'atom-rest-client'
-          @string 'Strict SSL'
+          @strong 'Strict SSL'
           @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
 
         # Payload
