@@ -31,6 +31,9 @@ rest_form =
   send_btn: '.rest-client-send',
   save_btn: '.rest-client-save',
   result: '.rest-client-result',
+  result_headers: '.rest-client-result-headers',
+  result_link: '.rest-client-result-link',
+  result_headers_link: '.rest-client-result-headers-link',
   status: '.rest-client-status',
   user_agent: '.rest-client-user-agent',
   strict_ssl: '.rest-client-strict-ssl',
@@ -119,10 +122,14 @@ class RestClientView extends ScrollView
 
         # Result
         @div class: 'tool-panel panel-bottom padded', =>
-          @strong 'Result | '
+          @a class: "#{rest_form.result_link.split('.')[1]}", 'Result'
+          @span ' | '
+          @a class: "#{rest_form.result_headers_link.split('.')[1]}", 'Headers'
+          @span ' | '
           @span class: "#{rest_form.status.split('.')[1]}"
 
           @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
+          @pre class: "#{rest_form.result_headers.split('.')[1]}", ""
           @pre class: "#{rest_form.result.split('.')[1]}", "#{RestClientResponse.DEFAULT_RESPONSE}"
           @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
@@ -173,6 +180,9 @@ class RestClientView extends ScrollView
 
     @on 'click', recent_requests.button, => @toggleRequests(recent_requests)
     @on 'click', saved_requests.button, => @toggleRequests(saved_requests)
+
+    @on 'click', rest_form.result_link, => @toggleResult(rest_form.result)
+    @on 'click', rest_form.result_headers_link, => @toggleResult(rest_form.result_headers)
 
     $('body').on 'click', rest_form.request_link, @loadRequest
     $('body').on 'click', rest_form.request_link_remove, @removeSavedRequest
@@ -262,6 +272,7 @@ class RestClientView extends ScrollView
         else
           @showErrorResponse(statusMessage)
 
+      headers = @formatHeaders response.headers
       response = new RestClientResponse(body).getFormatted()
       result = response
     else
@@ -269,6 +280,7 @@ class RestClientView extends ScrollView
       result = error
 
     $(rest_form.result).text(result)
+    $(rest_form.result_headers).text(headers).hide()
     @emitter.emit RestClientEvent.REQUEST_FINISHED, response
 
   getRequestBody: ->
@@ -284,6 +296,14 @@ class RestClientView extends ScrollView
           body = payload
 
     body
+
+  formatHeaders: (headers) =>
+    formattedHeaders = ''
+
+    for key, value of headers
+      formattedHeaders += key + ': ' + value + '\n'
+
+    formattedHeaders
 
   showSuccessfulResponse: (text) =>
     $(rest_form.status)
@@ -320,6 +340,11 @@ class RestClientView extends ScrollView
   toggleRequests: (target) ->
     $(target.list).toggle()
     $(target.button).toggleClass('selected')
+
+  toggleResult: (target) ->
+    $target = $(target)
+    $target.siblings('pre').hide()
+    $target.show()
 
   addRequestsInView: (target, requests) ->
     if not requests?
