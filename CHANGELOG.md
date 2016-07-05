@@ -5,7 +5,7 @@
 
 **Closed issues:**
 
-- Show Response headers : [\#36](https://github.com/ddavison/rest-client/issues/38)
+- Show Response headers : [\#38](https://github.com/ddavison/rest-client/issues/38)
 
 ## [v1.1.1](https://github.com/ddavison/rest-client/tree/v1.1.1) (2016-06-01)
 [Full Changelog](https://github.com/ddavison/rest-client/compare/v1.1.0...v1.1.1)
