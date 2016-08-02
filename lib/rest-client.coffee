@@ -27,6 +27,11 @@ module.exports =
       description: 'number of recent requests to save'
       type: 'integer'
       default: 5
+    split:
+      title: 'Split setting'
+      description: 'Open in "left" or "right" pane'
+      type: 'string'
+      default: 'left'
 
   activate: ->
     # TODO Config not accessible in view due to addOpener
@@ -34,4 +39,4 @@ module.exports =
       createRestClientView(uri: restClientUri) if filePath is restClientUri
 
     atom.commands.add 'atom-workspace', 'rest-client:show', ->
-      atom.workspace.open(restClientUri)
+      atom.workspace.open(restClientUri, split: atom.config.get('rest-client.split'), searchAllPanes: true)
