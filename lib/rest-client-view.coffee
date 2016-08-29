@@ -16,6 +16,9 @@ DEFAULT_HEADERS = ['User-Agent', 'Content-Type']
 RECENT_REQUESTS_FILE_LIMIT = 5
 current_method = 'GET'
 
+# Error messages
+PAYLOAD_JSON_ERROR_MESSAGE = 'The json payload is not valid'
+
 response = '' # global object for the response.
 
 rest_form =
@@ -239,7 +242,13 @@ class RestClientView extends ScrollView
     headers
 
   sendRequest: ->
-    request_options = @getRequestOptions()
+    request_options = {}
+
+    try
+      request_options = @getRequestOptions()
+    catch error
+      atom.notifications.addError PAYLOAD_JSON_ERROR_MESSAGE
+      return
 
     if request_options.url
       @emitter.emit RestClientEvent.NEW_REQUEST, request_options
@@ -295,8 +304,7 @@ class RestClientView extends ScrollView
     if payload
       switch $(rest_form.content_type).val()
         when "application/json"
-          json_obj = JSON.parse(payload)
-          body = JSON.stringify(json_obj)
+          body = JSON.stringify JSON.parse(payload)
         else
           body = payload
 
