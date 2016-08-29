@@ -37,6 +37,7 @@ rest_form =
   status: '.rest-client-status',
   user_agent: '.rest-client-user-agent',
   strict_ssl: '.rest-client-strict-ssl',
+  proxy_server: '.rest-client-proxy-server',
   open_in_editor: '.rest-client-open-in-editor'
   loading: '.rest-client-loading-icon'
   request_link: '.rest-client-request-link'
@@ -97,6 +98,9 @@ class RestClientView extends ScrollView
           @input class: "field #{rest_form.user_agent.split('.')[1]}", value: 'atom-rest-client'
           @strong 'Strict SSL'
           @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
+
+          @strong null, "Proxy server"
+          @input type: 'text', class: "field #{rest_form.proxy_server.split('.')[1]}"
 
         # Payload
         @div class: 'rest-client-payload-container', =>
@@ -260,6 +264,7 @@ class RestClientView extends ScrollView
       headers: this.getHeaders()
       method: current_method,
       strictSSL: $(rest_form.strict_ssl).is(':checked'),
+      proxy: $(rest_form.proxy_server).val(),
       body: @getRequestBody()
 
   onResponse: (error, response, body) =>
