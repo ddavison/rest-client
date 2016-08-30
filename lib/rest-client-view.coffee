@@ -210,10 +210,11 @@ class RestClientView extends ScrollView
     $(rest_form.result).text(RestClientResponse.DEFAULT_RESPONSE)
 
   getHeaders: ->
+    headers = []
     custom_headers = $(rest_form.headers).val().split('\n')
 
     for custom_header in custom_headers
-      current_header = custom_header.split(':')
+      current_header = custom_header.trim().split(':')
       if current_header.length > 1
         headers[current_header[0]] = current_header[1].trim()
 
@@ -278,11 +279,12 @@ class RestClientView extends ScrollView
   getRequestBody: ->
     payload = $(rest_form.payload).val()
     body = ""
+    content_type = @getContentType()
 
     if payload
-      switch @getContentType()
+      switch content_type
         when "application/json"
-          body = JSON.stringify JSON.parse(payload)
+          body = JSON.stringify(JSON.parse(payload))
         else
           body = payload
 
