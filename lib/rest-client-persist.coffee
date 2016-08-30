@@ -28,11 +28,9 @@ class RestClientPersist
 
   saveFile: ->
     requestsToBeSaved = @get(@requestFileLimit)
-    fs.writeFile(
+    fs.writeFileSync(
       "#{@path}",
-      JSON.stringify(requestsToBeSaved),
-      @showErrorOnPersist
-    )
+      JSON.stringify(requestsToBeSaved))
 
   update: (requests) ->
     @requests = requests
@@ -53,15 +51,7 @@ class RestClientPersist
   requestEquals: (request1, request2) ->
       return (request1.url == request2.url and
               request1.method == request2.method)
-          
-
-  showErrorOnPersist: (err) =>
-    if err
-      atom.confirm(
-        message: 'Cannot save file: ' + @path,
-        detailedMessage: JSON.stringify(err)
-      )
-
+  
   getRequestFileLimit: () ->
     return @requestFileLimit
 
