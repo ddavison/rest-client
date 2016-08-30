@@ -18,6 +18,8 @@ current_method = 'GET'
 
 # Error messages
 PAYLOAD_JSON_ERROR_MESSAGE = 'The json payload is not valid'
+RECENT_REQUESTS_ERROR_MESSAGE = 'Recent requests couldn\'t be loaded'
+SAVED_REQUESTS_ERROR_MESSAGE = 'Saved requests couldn\'t be loaded'
 
 response = '' # global object for the response.
 
@@ -336,7 +338,7 @@ class RestClientView extends ScrollView
 
   loadRecentRequestsInView: (err, requests) =>
     if err
-      console.log('Recent requests couldn\'t be loaded')
+      atom.notifications.addError RECENT_REQUESTS_ERROR_MESSAGE
       return
 
     @recentRequests.update(JSON.parse(requests))
@@ -344,7 +346,7 @@ class RestClientView extends ScrollView
 
   loadSavedRequestsInView: (err, requests) =>
     if err
-      console.log('Saved requests couldn\'t be loaded')
+      atom.notifications.addError SAVED_REQUESTS_ERROR_MESSAGE
       return
 
     @savedRequests.update(JSON.parse(requests))
