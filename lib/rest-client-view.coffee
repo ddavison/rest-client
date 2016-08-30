@@ -289,14 +289,8 @@ class RestClientView extends ScrollView
     body
 
   getContentType: ->
-    content_type = null
     headers = @getHeaders()
-
-    console.log(headers)
-    if headers.hasOwnProperty('Content-Type')
-      content_type = headers['Content-Type']
-
-    content_type
+    headers['Content-Type'] || headers['content-type']
 
   showSuccessfulResponse: (text) =>
     $(rest_form.status)
