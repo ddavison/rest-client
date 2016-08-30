@@ -12,7 +12,6 @@ PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 DEFAULT_REQUESTS_LIMIT = 10
-DEFAULT_HEADERS = ['User-Agent', 'Content-Type']
 RECENT_REQUESTS_FILE_LIMIT = 5
 current_method = 'GET'
 
@@ -31,7 +30,6 @@ rest_form =
   payload: '.rest-client-payload',
   encode_payload: '.rest-client-encodepayload',
   decode_payload: '.rest-client-decodepayload',
-  content_type: '.rest-client-content-type',
   clear_btn: '.rest-client-clear',
   send_btn: '.rest-client-send',
   save_btn: '.rest-client-save',
@@ -40,7 +38,6 @@ rest_form =
   result_link: '.rest-client-result-link',
   result_headers_link: '.rest-client-result-headers-link',
   status: '.rest-client-status',
-  user_agent: '.rest-client-user-agent',
   strict_ssl: '.rest-client-strict-ssl',
   proxy_server: '.rest-client-proxy-server',
   open_in_editor: '.rest-client-open-in-editor'
@@ -99,8 +96,6 @@ class RestClientView extends ScrollView
             @button class: 'btn selected', 'Raw'
 
           @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
-          @strong 'User-Agent'
-          @input class: "field #{rest_form.user_agent.split('.')[1]}", value: 'atom-rest-client'
           @strong 'Strict SSL'
           @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
 
@@ -118,16 +113,6 @@ class RestClientView extends ScrollView
             @button class: 'btn selected', 'Raw'
 
           @textarea class: "field #{rest_form.payload.split('.')[1]}", rows: 7
-
-        # Content-Type
-        @select class: "list-group #{rest_form.content_type.split('.')[1]}", =>
-          @option class: 'selected', 'application/x-www-form-urlencoded', 'application/x-www-form-urlencoded'
-          @option value: 'application/atom+xml', 'application/atom+xml'
-          @option value: 'application/json', 'application/json'
-          @option value:'application/xml', 'application/xml'
-          @option value: 'application/multipart-formdata', 'application/multipart-formdata'
-          @option value: 'text/html', 'text/html'
-          @option value: 'text/plain', 'text/plain'
 
         # Result
         @div class: 'tool-panel panel-bottom padded', =>
@@ -225,15 +210,6 @@ class RestClientView extends ScrollView
     $(rest_form.result).text(RestClientResponse.DEFAULT_RESPONSE)
 
   getHeaders: ->
-    headers = {
-      'User-Agent': $(rest_form.user_agent).val(),
-      'Content-Type': $(rest_form.content_type).val() + ';charset=utf-8'
-    }
-    headers = @getCustomHeaders(headers)
-
-    return headers
-
-  getCustomHeaders: (headers) ->
     custom_headers = $(rest_form.headers).val().split('\n')
 
     for custom_header in custom_headers
@@ -272,7 +248,7 @@ class RestClientView extends ScrollView
   getRequestOptions: ->
     options =
       url: $(rest_form.url).val()
-      headers: this.getHeaders()
+      headers: @getHeaders()
       method: current_method,
       strictSSL: $(rest_form.strict_ssl).is(':checked'),
       proxy: $(rest_form.proxy_server).val(),
@@ -288,7 +264,7 @@ class RestClientView extends ScrollView
         else
           @showErrorResponse(statusMessage)
 
-      headers = @formatHeaders response.headers
+      headers = @getHeadersAsString response.headers
       response = new RestClientResponse(body).getFormatted()
       result = response
     else
@@ -304,7 +280,7 @@ class RestClientView extends ScrollView
     body = ""
 
     if payload
-      switch $(rest_form.content_type).val()
+      switch @getContentType()
         when "application/json"
           body = JSON.stringify JSON.parse(payload)
         else
@@ -312,13 +288,15 @@ class RestClientView extends ScrollView
 
     body
 
-  formatHeaders: (headers) =>
-    formattedHeaders = ''
+  getContentType: ->
+    content_type = null
+    headers = @getHeaders()
 
-    for key, value of headers
-      formattedHeaders += key + ': ' + value + '\n'
+    console.log(headers)
+    if headers.hasOwnProperty('Content-Type')
+      content_type = headers['Content-Type']
 
-    formattedHeaders
+    content_type
 
   showSuccessfulResponse: (text) =>
     $(rest_form.status)
@@ -394,8 +372,6 @@ class RestClientView extends ScrollView
     @setMethodAsSelected(request.method)
     $(rest_form.payload).val(request.payload)
     $(rest_form.headers).val(@getHeadersAsString(request.headers))
-    $(rest_form.user_agent).val(request.headers['User-Agent'])
-    $(rest_form.content_type).val(request.headers['Content-Type'])
 
   addRecentRequestItem: (data) =>
     @addRequestItem(recent_requests.list, data)
@@ -407,18 +383,13 @@ class RestClientView extends ScrollView
     output = ''
 
     for header, value of headers
-        if not @isDefaultHeader(header)
-          output = output.concat(header + ': ' + value + '\n')
+      output = output.concat(header + ': ' + value + '\n')
 
     return output
 
   setMethodAsSelected: (method) ->
     $method = $(rest_form.method + '-' + method.toLowerCase())
     $method.click()
-
-  isDefaultHeader: (header) ->
-    return DEFAULT_HEADERS.indexOf(header) != -1
-
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
