@@ -370,7 +370,7 @@ class RestClientView extends ScrollView
   fillInRequest: (request) ->
     $(rest_form.url).val(request.url)
     @setMethodAsSelected(request.method)
-    $(rest_form.payload).val(request.payload)
+    $(rest_form.payload).val(request.body)
     $(rest_form.headers).val(@getHeadersAsString(request.headers))
 
   addRecentRequestItem: (data) =>
