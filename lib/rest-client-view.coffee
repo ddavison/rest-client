@@ -10,6 +10,7 @@ RestClientPersist = require './rest-client-persist'
 
 PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
+TAB_KEY = 9
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 DEFAULT_REQUESTS_LIMIT = 10
 RECENT_REQUESTS_FILE_LIMIT = 5
@@ -44,6 +45,7 @@ rest_form =
   loading: '.rest-client-loading-icon'
   request_link: '.rest-client-request-link'
   request_link_remove: '.rest-client-request-link-remove'
+  tab_inserts_tab: '.rest-client-tab-inserts-tab'
 
 recent_requests =
   block: '#rest-client-recent'
@@ -87,6 +89,10 @@ class RestClientView extends ScrollView
         @div id: "#{saved_requests.block.split('#')[1]}", =>
           @button id: "#{saved_requests.button.split('#')[1]}", class: "btn", 'Saved requests'
           @ul id: "#{saved_requests.list.split('#')[1]}", style: 'display: none;'
+
+        @div null, =>
+          @strong 'Tab inserts tab'
+          @input type: 'checkbox', class: "field #{rest_form.tab_inserts_tab.split('.')[1]}"
 
         # Headers
         @div class: 'rest-client-headers-container', =>
@@ -171,6 +177,25 @@ class RestClientView extends ScrollView
         _this.sendRequest() if event.keyCode is ENTER_KEY
         return
     )(this)
+
+    @on 'keydown', 'textarea', ((e) ->
+      tabInsertsTab = $(rest_form.tab_inserts_tab).is(':checked')
+
+      if tabInsertsTab && !event.shiftKey && event.keyCode == TAB_KEY
+        text = e.target.value
+        start = e.target.selectionStart
+        end = e.target.selectionEnd
+
+        if start == end
+          e.target.value = text.slice(0, start) + "\t" +
+                           text.slice(start)
+        else
+          e.target.value = text.slice(0, start) + "\t" +
+                           text.slice(end, text.length)
+
+        e.target.selectionStart = start + 1
+        e.target.selectionEnd = start + 1
+    )
 
     @on 'click', recent_requests.button, => @toggleRequests(recent_requests)
     @on 'click', saved_requests.button, => @toggleRequests(saved_requests)
