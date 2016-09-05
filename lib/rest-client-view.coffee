@@ -45,6 +45,7 @@ rest_form =
   loading: '.rest-client-loading-icon'
   request_link: '.rest-client-request-link'
   request_link_remove: '.rest-client-request-link-remove'
+  tab_inserts_tab: '.rest-client-tab-inserts-tab'
 
 recent_requests =
   block: '#rest-client-recent'
