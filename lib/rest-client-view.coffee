@@ -184,6 +184,9 @@ class RestClientView extends ScrollView
     @on 'click', rest_form.result_link, => @toggleResult(rest_form.result)
     @on 'click', rest_form.result_headers_link, => @toggleResult(rest_form.result_headers)
 
+    @on 'click', rest_form.headers_header, => @toggleSection(rest_form.headers_body)
+    @on 'click', rest_form.payload_header, => @toggleSection(rest_form.payload_body)
+
     $('body').on 'click', rest_form.request_link, @loadRequest
     $('body').on 'click', rest_form.request_link_remove, @removeSavedRequest
 
@@ -340,6 +343,9 @@ class RestClientView extends ScrollView
     $target = $(target)
     $target.siblings('pre').hide()
     $target.show()
+
+  toggleSection: (target) ->
+    $(target).toggle()
 
   addRequestsInView: (target, requests) ->
     if not requests?
