@@ -345,6 +345,14 @@ class RestClientView extends ScrollView
     $target.show()
 
   toggleSection: (target) ->
+    header = $(target).parent().children('h5')
+    headerText = header.text()
+
+    if headerText.indexOf('…') < 0
+      header.text("#{headerText} …")
+    else
+      header.text("#{headerText.slice(0, headerText.length - 2)}")
+
     $(target).toggle()
 
   addRequestsInView: (target, requests) ->
