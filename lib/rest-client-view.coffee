@@ -178,6 +178,25 @@ class RestClientView extends ScrollView
         return
     )(this)
 
+    @on 'keydown', 'textarea', ((e) ->
+      tabInsertsTab = $(rest_form.tab_inserts_tab).is(':checked')
+
+      if tabInsertsTab && !event.shiftKey && event.keyCode == TAB_KEY
+        text = e.target.value
+        start = e.target.selectionStart
+        end = e.target.selectionEnd
+
+        if start == end
+          e.target.value = text.slice(0, start) + "\t" +
+                           text.slice(start)
+        else
+          e.target.value = text.slice(0, start) + "\t" +
+                           text.slice(end, text.length)
+
+        e.target.selectionStart = start + 1
+        e.target.selectionEnd = start + 1
+    )
+
     @on 'click', recent_requests.button, => @toggleRequests(recent_requests)
     @on 'click', saved_requests.button, => @toggleRequests(saved_requests)
 
