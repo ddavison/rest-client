@@ -10,6 +10,7 @@ RestClientPersist = require './rest-client-persist'
 
 PACKAGE_PATH = atom.packages.resolvePackagePath('rest-client')
 ENTER_KEY = 13
+TAB_KEY = 9
 DEFAULT_NORESPONSE = 'NO RESPONSE'
 DEFAULT_REQUESTS_LIMIT = 10
 RECENT_REQUESTS_FILE_LIMIT = 5
