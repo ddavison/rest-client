@@ -90,6 +90,10 @@ class RestClientView extends ScrollView
           @button id: "#{saved_requests.button.split('#')[1]}", class: "btn", 'Saved requests'
           @ul id: "#{saved_requests.list.split('#')[1]}", style: 'display: none;'
 
+        @div null, =>
+          @strong 'Tab inserts tab'
+          @input type: 'checkbox', class: "field #{rest_form.tab_inserts_tab.split('.')[1]}"
+
         # Headers
         @div class: 'rest-client-headers-container', =>
           @h5 'Headers'
