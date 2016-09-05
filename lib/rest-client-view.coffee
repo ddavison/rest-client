@@ -27,7 +27,9 @@ rest_form =
   method: '.rest-client-method',
   method_other_field: '.rest-client-method-other-field',
   headers: '.rest-client-headers',
+  headers_header: '.rest-client-headers-header',
   payload: '.rest-client-payload',
+  payload_header: '.rest-client-payload-header',
   encode_payload: '.rest-client-encodepayload',
   decode_payload: '.rest-client-decodepayload',
   clear_btn: '.rest-client-clear',
@@ -90,7 +92,7 @@ class RestClientView extends ScrollView
 
         # Headers
         @div class: 'rest-client-headers-container', =>
-          @h5 'Headers'
+          @h5 class: "#{rest_form.headers_header.split('.')[1]}", 'Headers'
 
           @div class: 'btn-group btn-group-lg', =>
             @button class: 'btn selected', 'Raw'
@@ -104,7 +106,7 @@ class RestClientView extends ScrollView
 
         # Payload
         @div class: 'rest-client-payload-container', =>
-          @h5 'Payload'
+          @h5 class: "#{rest_form.payload_header.split('.')[1]}", 'Payload'
 
           @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
           @div class: "buffer float-right", '|'
