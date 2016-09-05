@@ -32,6 +32,11 @@ module.exports =
       description: 'Open in "left" or "right" pane'
       type: 'string'
       default: 'left'
+    tab_inserts_tab:
+      title: 'Tab inserts tab'
+      description: 'Pressing the tab key inserts a tab character.'
+      type: 'boolean'
+      default: false
 
   activate: ->
     # TODO Config not accessible in view due to addOpener
