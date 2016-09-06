@@ -45,3 +45,25 @@ module.exports =
 
     atom.commands.add 'atom-workspace', 'rest-client:show', ->
       atom.workspace.open(restClientUri, split: atom.config.get('rest-client.split'), searchAllPanes: true)
+
+    atom.commands.add '.rest-client-headers, .rest-client-payload',
+      'rest-client.insertTab': => @insertTab()
+
+    atom.config.observe 'rest-client.tab_inserts_tab', (value) ->
+      if value
+        atom.keymaps.add 'REST Client', '.rest-client-headers, .rest-client-payload': 'tab': 'rest-client.insertTab'
+      else
+        atom.keymaps.add 'REST Client', '.rest-client-headers, .rest-client-payload': 'tab': 'unset!'
+
+  insertTab: ->
+    text = event.target.value
+    start = event.target.selectionStart
+    end = event.target.selectionEnd
+
+    if start == end
+      event.target.value = text.slice(0, start) + "\t" + text.slice(start)
+    else
+      event.target.value = text.slice(0, start) + "\t" + text.slice(end, text.length)
+
+    event.target.selectionStart = start + 1
+    event.target.selectionEnd = start + 1
