@@ -60,7 +60,7 @@ module.exports =
     start = event.target.selectionStart
     end = event.target.selectionEnd
 
-    if start == end
+    if start is end
       event.target.value = text.slice(0, start) + "\t" + text.slice(start)
     else
       event.target.value = text.slice(0, start) + "\t" + text.slice(end, text.length)
