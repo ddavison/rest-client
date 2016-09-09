@@ -41,17 +41,20 @@ module.exports =
           description: 'Pressing the tab key will insert a tab character.'
           type: 'boolean'
           default: true
-        soft_tab:
+          order: 1
+        soft_tabs:
           title: 'Soft Tabs'
           description: 'Use spaces to represent tabs.'
           type: 'boolean'
           default: true
+          order: 2
         soft_tab_length:
           title: 'Soft Tab Length'
           description: 'The number of spaces used to represent a tab.'
           type: 'integer'
           minimum: 1
           default: 2
+          order: 3
 
 
   activate: ->
@@ -64,15 +67,18 @@ module.exports =
 
     atom.commands.add '.rest-client-headers, .rest-client-payload', 'rest-client.insertTab': => @insertTab()
 
-    atom.config.observe 'rest-client.tab_inserts_tab', (value) ->
+    atom.config.observe 'rest-client.tab_key_behavior.insert_tab', (value) ->
       command = if value then 'rest-client.insertTab' else 'unset!'
       atom.keymaps.add 'REST Client', '.rest-client-headers, .rest-client-payload': 'tab': command
 
   insertTab: ->
+    soft_tabs = atom.config.get('rest-client.tab_key_behavior.soft_tabs')
+    soft_tab_length = atom.config.get('rest-client.tab_key_behavior.soft_tab_length')
+    tab = if soft_tabs then ' '.repeat(soft_tab_length) else '\t'
     text = event.target.value
     start = event.target.selectionStart
     end = event.target.selectionEnd
     endText = if start is end then text.slice(start) else text.slice(end, text.length)
 
-    event.target.value = text.slice(0, start) + '\t' + endText
-    event.target.selectionStart = event.target.selectionEnd = start + 1
+    event.target.value = text.slice(0, start) + tab + endText
+    event.target.selectionStart = event.target.selectionEnd = start + tab.length
