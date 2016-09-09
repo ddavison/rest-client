@@ -32,11 +32,27 @@ module.exports =
       description: 'Open in "left" or "right" pane'
       type: 'string'
       default: 'left'
-    tab_inserts_tab:
-      title: 'Tab inserts tab'
-      description: 'Pressing the tab key in a textarea field inserts a tab character.'
-      type: 'boolean'
-      default: false
+    tab_key_behavior:
+      title: 'Tab Key Behavior'
+      type: 'object'
+      properties:
+        insert_tab:
+          title: 'Insert Tab'
+          description: 'Pressing the tab key will insert a tab character.'
+          type: 'boolean'
+          default: true
+        soft_tab:
+          title: 'Soft Tabs'
+          description: 'Use spaces to represent tabs.'
+          type: 'boolean'
+          default: true
+        soft_tab_length:
+          title: 'Soft Tab Length'
+          description: 'The number of spaces used to represent a tab.'
+          type: 'integer'
+          minimum: 1
+          default: 2
+
 
   activate: ->
     # TODO Config not accessible in view due to addOpener
