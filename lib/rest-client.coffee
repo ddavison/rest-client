@@ -34,7 +34,7 @@ module.exports =
       default: 'left'
     tab_inserts_tab:
       title: 'Tab inserts tab'
-      description: 'Pressing the tab key inserts a tab character.'
+      description: 'Pressing the tab key in a textarea field inserts a tab character.'
       type: 'boolean'
       default: false
 
@@ -46,24 +46,17 @@ module.exports =
     atom.commands.add 'atom-workspace', 'rest-client:show', ->
       atom.workspace.open(restClientUri, split: atom.config.get('rest-client.split'), searchAllPanes: true)
 
-    atom.commands.add '.rest-client-headers, .rest-client-payload',
-      'rest-client.insertTab': => @insertTab()
+    atom.commands.add '.rest-client-headers, .rest-client-payload', 'rest-client.insertTab': => @insertTab()
 
     atom.config.observe 'rest-client.tab_inserts_tab', (value) ->
-      if value
-        atom.keymaps.add 'REST Client', '.rest-client-headers, .rest-client-payload': 'tab': 'rest-client.insertTab'
-      else
-        atom.keymaps.add 'REST Client', '.rest-client-headers, .rest-client-payload': 'tab': 'unset!'
+      command = if value then 'rest-client.insertTab' else 'unset!'
+      atom.keymaps.add 'REST Client', '.rest-client-headers, .rest-client-payload': 'tab': command
 
   insertTab: ->
     text = event.target.value
     start = event.target.selectionStart
     end = event.target.selectionEnd
+    endText = if start is end then text.slice(start) else text.slice(end, text.length)
 
-    if start is end
-      event.target.value = text.slice(0, start) + "\t" + text.slice(start)
-    else
-      event.target.value = text.slice(0, start) + "\t" + text.slice(end, text.length)
-
-    event.target.selectionStart = start + 1
-    event.target.selectionEnd = start + 1
+    event.target.value = text.slice(0, start) + '\t' + endText
+    event.target.selectionStart = event.target.selectionEnd = start + 1
