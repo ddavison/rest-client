@@ -27,11 +27,7 @@ rest_form =
   method: '.rest-client-method',
   method_other_field: '.rest-client-method-other-field',
   headers: '.rest-client-headers',
-  headers_header: '.rest-client-headers-header',
-  headers_body: '.rest-client-headers-body',
   payload: '.rest-client-payload',
-  payload_header: '.rest-client-payload-header',
-  payload_body: '.rest-client-payload-body',
   encode_payload: '.rest-client-encodepayload',
   decode_payload: '.rest-client-decodepayload',
   clear_btn: '.rest-client-clear',
@@ -94,31 +90,29 @@ class RestClientView extends ScrollView
 
         # Headers
         @div class: 'rest-client-headers-container', =>
-          @h5 class: "#{rest_form.headers_header.split('.')[1]}", 'Headers'
+          @h5 'Headers'
 
-          @div class: "#{rest_form.headers_body.split('.')[1]}", =>
-            @div class: 'btn-group btn-group-lg', =>
-              @button class: 'btn selected', 'Raw'
+          @div class: 'btn-group btn-group-lg', =>
+            @button class: 'btn selected', 'Raw'
 
-            @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
-            @strong 'Strict SSL'
-            @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
+          @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
+          @strong 'Strict SSL'
+          @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
 
-            @strong null, "Proxy server"
-            @input type: 'text', class: "field #{rest_form.proxy_server.split('.')[1]}"
+          @strong null, "Proxy server"
+          @input type: 'text', class: "field #{rest_form.proxy_server.split('.')[1]}"
 
         # Payload
         @div class: 'rest-client-payload-container', =>
-          @h5 class: "#{rest_form.payload_header.split('.')[1]}", 'Payload'
+          @h5 'Payload'
 
-          @div class: "#{rest_form.payload_body.split('.')[1]}", =>
-            @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
-            @div class: "buffer float-right", '|'
-            @div class: "text-info lnk float-right #{rest_form.encode_payload.split('.')[1]}", 'Encode payload'
-            @div class: 'btn-group btn-group-lg', =>
-              @button class: 'btn selected', 'Raw'
+          @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
+          @div class: "buffer float-right", '|'
+          @div class: "text-info lnk float-right #{rest_form.encode_payload.split('.')[1]}", 'Encode payload'
+          @div class: 'btn-group btn-group-lg', =>
+            @button class: 'btn selected', 'Raw'
 
-            @textarea class: "field #{rest_form.payload.split('.')[1]}", rows: 7
+          @textarea class: "field #{rest_form.payload.split('.')[1]}", rows: 7
 
       # Result
       @div class: 'rest-client-result-container padded', =>
@@ -183,9 +177,6 @@ class RestClientView extends ScrollView
 
     @on 'click', rest_form.result_link, => @toggleResult(rest_form.result)
     @on 'click', rest_form.result_headers_link, => @toggleResult(rest_form.result_headers)
-
-    @on 'click', rest_form.headers_header, => @toggleSection(rest_form.headers_body)
-    @on 'click', rest_form.payload_header, => @toggleSection(rest_form.payload_body)
 
     $('body').on 'click', rest_form.request_link, @loadRequest
     $('body').on 'click', rest_form.request_link_remove, @removeSavedRequest
@@ -343,17 +334,6 @@ class RestClientView extends ScrollView
     $target = $(target)
     $target.siblings('pre').hide()
     $target.show()
-
-  toggleSection: (target) ->
-    header = $(target).parent().children('h5')
-    headerText = header.text()
-
-    if headerText.indexOf('…') < 0
-      header.text("#{headerText} …")
-    else
-      header.text("#{headerText.slice(0, headerText.length - 2)}")
-
-    $(target).toggle()
 
   addRequestsInView: (target, requests) ->
     if not requests?
