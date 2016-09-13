@@ -91,10 +91,7 @@ class RestClientView extends ScrollView
         # Headers
         @div class: 'rest-client-headers-container', =>
           @div class: 'rest-client-headers-header', =>
-            @h5 =>
-              @text 'Headers'
-              @span class: 'ellipsis hidden', =>
-                @raw ' &hellip;'
+            @h5 'Headers'
 
           @div class: 'rest-client-headers-body', =>
             @div class: 'btn-group btn-group-lg', =>
@@ -110,10 +107,7 @@ class RestClientView extends ScrollView
         # Payload
         @div class: 'rest-client-payload-container', =>
           @div class: 'rest-client-payload-header', =>
-            @h5 =>
-              @text 'Payload'
-              @span class: 'ellipsis hidden', =>
-                @raw ' &hellip;'
+            @h5 'Payload'
 
           @div class: 'rest-client-payload-body', =>
             @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
@@ -196,15 +190,11 @@ class RestClientView extends ScrollView
 
   toggleHeaders: ->
     body = $('.rest-client-headers-body')
-    ellipsis = $('.rest-client-headers-header .ellipsis')
     body.toggle()
-    ellipsis.toggleClass('hidden')
 
   togglePayload: ->
     body = $('.rest-client-payload-body')
-    ellipsis = $('.rest-client-payload-header .ellipsis')
     body.toggle()
-    ellipsis.toggleClass('hidden')
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
