@@ -185,11 +185,11 @@ class RestClientView extends ScrollView
     $('body').on 'click', rest_form.request_link, @loadRequest
     $('body').on 'click', rest_form.request_link_remove, @removeSavedRequest
 
-    @on 'click', '.rest-client-headers-header', => @toggleBody('.rest-client-headers-body')
-    @on 'click', '.rest-client-payload-header', => @toggleBody('.rest-client-payload-body')
+    @on 'click', '.rest-client-headers-header', => @toggleBody('.rest-client-headers-header > h5', '.rest-client-headers-body')
+    @on 'click', '.rest-client-payload-header', => @toggleBody('.rest-client-payload-header > h5', '.rest-client-payload-body')
 
-  toggleBody: (body) ->
-    header = $('.rest-client-headers-header > h5')
+  toggleBody: (header, body) ->
+    header = $(header)
     body = $(body)
     header.toggleClass(c) for c in ['header-expanded', 'header-collapsed']
     body.toggle()
