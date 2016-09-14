@@ -108,3 +108,15 @@ input[type='text'], textarea {
 .rest-client-headers-header:hover, .rest-client-payload-header:hover {
   cursor: pointer;
 }
+
+.header-expanded::before {
+  content: '↓ ';
+}
+
+.header-collapsed::before {
+  content: '→ ';
+}
+
+.header-collapsed::after {
+  content: ' …'
+}
