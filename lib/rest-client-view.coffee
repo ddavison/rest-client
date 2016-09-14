@@ -90,7 +90,7 @@ class RestClientView extends ScrollView
 
         # Headers
         @div class: 'rest-client-headers-container', =>
-          @div class: 'rest-client-headers-header', =>
+          @div class: 'rest-client-header rest-client-headers-header', =>
             @h5 class: 'header-expanded', 'Headers'
 
           @div class: 'rest-client-headers-body', =>
@@ -106,7 +106,7 @@ class RestClientView extends ScrollView
 
         # Payload
         @div class: 'rest-client-payload-container', =>
-          @div class: 'rest-client-payload-header', =>
+          @div class: 'rest-client-header rest-client-payload-header', =>
             @h5 class: 'header-expanded', 'Payload'
 
           @div class: 'rest-client-payload-body', =>
