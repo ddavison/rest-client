@@ -91,7 +91,7 @@ class RestClientView extends ScrollView
         # Headers
         @div class: 'rest-client-headers-container', =>
           @div class: 'rest-client-headers-header', =>
-            @h5 'Headers'
+            @h5 class: 'header-expanded', 'Headers'
 
           @div class: 'rest-client-headers-body', =>
             @div class: 'btn-group btn-group-lg', =>
@@ -107,7 +107,7 @@ class RestClientView extends ScrollView
         # Payload
         @div class: 'rest-client-payload-container', =>
           @div class: 'rest-client-payload-header', =>
-            @h5 'Payload'
+            @h5 class: 'header-expanded', 'Payload'
 
           @div class: 'rest-client-payload-body', =>
             @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
@@ -185,15 +185,13 @@ class RestClientView extends ScrollView
     $('body').on 'click', rest_form.request_link, @loadRequest
     $('body').on 'click', rest_form.request_link_remove, @removeSavedRequest
 
-    @on 'click', '.rest-client-headers-header', => @toggleHeaders()
-    @on 'click', '.rest-client-payload-header', => @togglePayload()
+    @on 'click', '.rest-client-headers-header', => @toggleBody('.rest-client-headers-body')
+    @on 'click', '.rest-client-payload-header', => @toggleBody('.rest-client-payload-body')
 
-  toggleHeaders: ->
-    body = $('.rest-client-headers-body')
-    body.toggle()
-
-  togglePayload: ->
-    body = $('.rest-client-payload-body')
+  toggleBody: (body) ->
+    header = $('.rest-client-headers-header > h5')
+    body = $(body)
+    header.toggleClass(c) for c in ['header-expanded', 'header-collapsed']
     body.toggle()
 
   openInEditor: ->
