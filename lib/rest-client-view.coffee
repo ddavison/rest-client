@@ -90,29 +90,33 @@ class RestClientView extends ScrollView
 
         # Headers
         @div class: 'rest-client-headers-container', =>
-          @h5 'Headers'
+          @div class: 'rest-client-header rest-client-headers-header', =>
+            @h5 class: 'header-expanded', 'Headers'
 
-          @div class: 'btn-group btn-group-lg', =>
-            @button class: 'btn selected', 'Raw'
+          @div class: 'rest-client-headers-body', =>
+            @div class: 'btn-group btn-group-lg', =>
+              @button class: 'btn selected', 'Raw'
 
-          @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
-          @strong 'Strict SSL'
-          @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
+            @textarea class: "field #{rest_form.headers.split('.')[1]}", rows: 7
+            @strong 'Strict SSL'
+            @input type: 'checkbox', class: "field #{rest_form.strict_ssl.split('.')[1]}", checked: true
 
-          @strong null, "Proxy server"
-          @input type: 'text', class: "field #{rest_form.proxy_server.split('.')[1]}"
+            @strong null, "Proxy server"
+            @input type: 'text', class: "field #{rest_form.proxy_server.split('.')[1]}"
 
         # Payload
         @div class: 'rest-client-payload-container', =>
-          @h5 'Payload'
+          @div class: 'rest-client-header rest-client-payload-header', =>
+            @h5 class: 'header-expanded', 'Payload'
 
-          @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
-          @div class: "buffer float-right", '|'
-          @div class: "text-info lnk float-right #{rest_form.encode_payload.split('.')[1]}", 'Encode payload'
-          @div class: 'btn-group btn-group-lg', =>
-            @button class: 'btn selected', 'Raw'
+          @div class: 'rest-client-payload-body', =>
+            @div class: "text-info lnk float-right #{rest_form.decode_payload.split('.')[1]}", 'Decode payload '
+            @div class: "buffer float-right", '|'
+            @div class: "text-info lnk float-right #{rest_form.encode_payload.split('.')[1]}", 'Encode payload'
+            @div class: 'btn-group btn-group-lg', =>
+              @button class: 'btn selected', 'Raw'
 
-          @textarea class: "field #{rest_form.payload.split('.')[1]}", rows: 7
+            @textarea class: "field #{rest_form.payload.split('.')[1]}", rows: 7
 
       # Result
       @div class: 'rest-client-result-container padded', =>
@@ -180,6 +184,15 @@ class RestClientView extends ScrollView
 
     $('body').on 'click', rest_form.request_link, @loadRequest
     $('body').on 'click', rest_form.request_link_remove, @removeSavedRequest
+
+    @on 'click', '.rest-client-headers-header', => @toggleBody('.rest-client-headers-header > h5', '.rest-client-headers-body')
+    @on 'click', '.rest-client-payload-header', => @toggleBody('.rest-client-payload-header > h5', '.rest-client-payload-body')
+
+  toggleBody: (header, body) ->
+    header = $(header)
+    body = $(body)
+    header.toggleClass(c) for c in ['header-expanded', 'header-collapsed']
+    body.toggle()
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
@@ -337,7 +350,7 @@ class RestClientView extends ScrollView
 
   addRequestsInView: (target, requests) ->
     if not requests?
-        return
+      return
 
     for request in requests
       @addRequestItem(target, request)

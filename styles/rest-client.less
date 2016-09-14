@@ -42,8 +42,6 @@
   }
 }
 
-
-
 .rest-client-url {
   width: 100%;
   font-size: 15px;
@@ -105,4 +103,24 @@ input[type='text'], textarea {
 
 .rest-client-request-link-remove {
   padding-left: 10px;
+}
+
+.rest-client-header {
+  color: @text-color-info;
+}
+
+.rest-client-header:hover {
+  cursor: pointer;
+}
+
+.header-expanded::before {
+  content: '↓ ';
+}
+
+.header-collapsed::before {
+  content: '→ ';
+}
+
+.header-collapsed::after {
+  content: ' …'
 }
