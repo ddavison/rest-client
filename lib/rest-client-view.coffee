@@ -189,10 +189,8 @@ class RestClientView extends ScrollView
     @on 'click', '.rest-client-payload-header', => @toggleBody('.rest-client-payload-header > h5', '.rest-client-payload-body')
 
   toggleBody: (header, body) ->
-    header = $(header)
-    body = $(body)
-    header.toggleClass(c) for c in ['header-expanded', 'header-collapsed']
-    body.toggle()
+    $(header).toggleClass(c) for c in ['header-expanded', 'header-collapsed']
+    $(body).slideToggle('fast')
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
