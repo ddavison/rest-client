@@ -1,11 +1,74 @@
 # Change Log
 
+## [v1.2.5](https://github.com/ddavison/rest-client/tree/v1.2.5) (2016-09-21)
+[Full Changelog](https://github.com/ddavison/rest-client/compare/v1.2.4...v1.2.5)
+
+**Implemented enhancements:**
+
+- Collapsing Sections [\#60](https://github.com/ddavison/rest-client/pull/60) ([bernardlee](https://github.com/bernardlee))
+
+**Merged pull requests:**
+
+- Add animation when toggling Headers and Payload [\#62](https://github.com/ddavison/rest-client/pull/62) ([bernardlee](https://github.com/bernardlee))
+
+## [v1.2.4](https://github.com/ddavison/rest-client/tree/v1.2.4) (2016-09-09)
+[Full Changelog](https://github.com/ddavison/rest-client/compare/v1.2.3...v1.2.4)
+
+**Implemented enhancements:**
+
+- Tab inserts tab [\#55](https://github.com/ddavison/rest-client/pull/55) ([bernardlee](https://github.com/bernardlee))
+
+## [v1.2.3](https://github.com/ddavison/rest-client/tree/v1.2.3) (2016-09-08)
+[Full Changelog](https://github.com/ddavison/rest-client/compare/v1.2.2...v1.2.3)
+
+**Closed issues:**
+
+- Put response panel to right will be better [\#56](https://github.com/ddavison/rest-client/issues/56)
+- Not loading body or header content from saved/recent calls [\#47](https://github.com/ddavison/rest-client/issues/47)
+- Uncaught SyntaxError: Unexpected token a [\#44](https://github.com/ddavison/rest-client/issues/44)
+- Fix tests in Travis CI [\#40](https://github.com/ddavison/rest-client/issues/40)
+- proxy configuration [\#32](https://github.com/ddavison/rest-client/issues/32)
+
+**Merged pull requests:**
+
+- ignore intellij files, fix allow split right of pane response and res… [\#57](https://github.com/ddavison/rest-client/pull/57) ([ddavison](https://github.com/ddavison))
+- Fix payload json, close \#47 [\#51](https://github.com/ddavison/rest-client/pull/51) ([javaguirre](https://github.com/javaguirre))
+- Fix wrong json payload error, close \#44 [\#50](https://github.com/ddavison/rest-client/pull/50) ([javaguirre](https://github.com/javaguirre))
+- Added proxy server selection, close \#32 [\#49](https://github.com/ddavison/rest-client/pull/49) ([javaguirre](https://github.com/javaguirre))
+
+## [v1.2.2](https://github.com/ddavison/rest-client/tree/v1.2.2) (2016-08-18)
+[Full Changelog](https://github.com/ddavison/rest-client/compare/v1.2.1...v1.2.2)
+
+**Implemented enhancements:**
+
+- Save requests and collection of requests [\#14](https://github.com/ddavison/rest-client/issues/14)
+
+**Closed issues:**
+
+- how may I encode basic authentication \(login:password\) [\#46](https://github.com/ddavison/rest-client/issues/46)
+
+## [v1.2.1](https://github.com/ddavison/rest-client/tree/v1.2.1) (2016-08-02)
+[Full Changelog](https://github.com/ddavison/rest-client/compare/v1.2.0...v1.2.1)
+
+**Closed issues:**
+
+- How to pass parameters [\#43](https://github.com/ddavison/rest-client/issues/43)
+
+**Merged pull requests:**
+
+- Split right [\#39](https://github.com/ddavison/rest-client/pull/39) ([kabootit](https://github.com/kabootit))
+
 ## [v1.2.0](https://github.com/ddavison/rest-client/tree/v1.2.0) (2016-07-05)
 [Full Changelog](https://github.com/ddavison/rest-client/compare/v1.1.1...v1.2.0)
 
 **Closed issues:**
 
-- Show Response headers : [\#38](https://github.com/ddavison/rest-client/issues/38)
+- Show response headers [\#38](https://github.com/ddavison/rest-client/issues/38)
+- The changelog is not complete [\#35](https://github.com/ddavison/rest-client/issues/35)
+
+**Merged pull requests:**
+
+- Response headers shown in view [\#41](https://github.com/ddavison/rest-client/pull/41) ([javaguirre](https://github.com/javaguirre))
 
 ## [v1.1.1](https://github.com/ddavison/rest-client/tree/v1.1.1) (2016-06-01)
 [Full Changelog](https://github.com/ddavison/rest-client/compare/v1.1.0...v1.1.1)
@@ -24,7 +87,6 @@
 **Merged pull requests:**
 
 - Strict ssl [\#34](https://github.com/ddavison/rest-client/pull/34) ([javaguirre](https://github.com/javaguirre))
-- Prepare 1.0.0 release [\#31](https://github.com/ddavison/rest-client/pull/31) ([ddavison](https://github.com/ddavison))
 
 ## [v1.0.0](https://github.com/ddavison/rest-client/tree/v1.0.0) (2016-03-15)
 [Full Changelog](https://github.com/ddavison/rest-client/compare/v0.5.1...v1.0.0)
@@ -64,9 +126,7 @@
 **Closed issues:**
 
 - How can i install this package in Atom? [\#20](https://github.com/ddavison/rest-client/issues/20)
-- Deprecated Atom APIs will be removed June 1st [\#18](https://github.com/ddavison/rest-client/issues/18)
 - Atom.Object.defineProperty.get is deprecated. [\#17](https://github.com/ddavison/rest-client/issues/17)
-- Workspace.registerOpener is deprecated. [\#12](https://github.com/ddavison/rest-client/issues/12)
 - Atom.Object.defineProperty.get is deprecated. [\#9](https://github.com/ddavison/rest-client/issues/9)
 
 **Merged pull requests:**
@@ -79,11 +139,6 @@
 **Closed issues:**
 
 - Package.getStylesheetsPath is deprecated. [\#16](https://github.com/ddavison/rest-client/issues/16)
-
-**Merged pull requests:**
-
-- Fix rest-client module loading on atom \> 1.0 [\#21](https://github.com/ddavison/rest-client/pull/21) ([haad](https://github.com/haad))
-- rename stylesheets to styles fix \#16 [\#19](https://github.com/ddavison/rest-client/pull/19) ([erikfrelund](https://github.com/erikfrelund))
 
 ## [v0.3.3](https://github.com/ddavison/rest-client/tree/v0.3.3) (2015-05-04)
 [Full Changelog](https://github.com/ddavison/rest-client/compare/v0.3.1...v0.3.3)
