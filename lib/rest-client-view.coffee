@@ -1,6 +1,7 @@
 {$, ScrollView} = require 'atom-space-pen-views'
 {Emitter} = require 'atom'
 querystring = require 'querystring'
+mime = require 'mime-types'
 
 RestClientResponse = require './rest-client-response'
 RestClientEditor = require './rest-client-editor'
@@ -136,6 +137,7 @@ class RestClientView extends ScrollView
     @RECENT_REQUESTS_PATH = "#{PACKAGE_PATH}/recent.json"
 
     @lastRequest = null
+    @lastResponse = null
 
     @recentRequests = new RestClientPersist(@RECENT_REQUESTS_PATH)
     @recentRequests.setRequestFileLimit(RECENT_REQUESTS_FILE_LIMIT)
@@ -194,7 +196,8 @@ class RestClientView extends ScrollView
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
-    file_name = "#{current_method} - #{$(rest_form.url).val()}"
+    extension = mime.extension(@lastResponse.headers['content-type']);
+    file_name = "#{@lastRequest.method} #{@lastRequest.url}#{'.' + extension if extension}"
     editor = new RestClientEditor(textResult, file_name)
     editor.open()
 
@@ -267,6 +270,7 @@ class RestClientView extends ScrollView
       body: @getRequestBody()
 
   onResponse: (error, response, body) =>
+    @setLastResponse(response)
     if !error
       statusMessage = response.statusCode + " " + response.statusMessage
 
@@ -282,7 +286,6 @@ class RestClientView extends ScrollView
     else
       @showErrorResponse(DEFAULT_NORESPONSE)
       result = error
-
     $(rest_form.result).text(result)
     $(rest_form.result_headers).text(headers).hide()
     @emitter.emit RestClientEvent.REQUEST_FINISHED, response
@@ -385,6 +388,9 @@ class RestClientView extends ScrollView
 
   setLastRequest: (request) =>
     @lastRequest = request
+
+  setLastResponse: (response) =>
+    @lastResponse = response
 
   getHeadersAsString: (headers)  ->
     output = ''
