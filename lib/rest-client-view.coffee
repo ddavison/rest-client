@@ -221,7 +221,7 @@ class RestClientView extends ScrollView
     $(rest_form.result).text(RestClientResponse.DEFAULT_RESPONSE)
 
   getHeaders: ->
-    headers = []
+    headers = {}
     custom_headers = $(rest_form.headers).val().split('\n')
 
     for custom_header in custom_headers
