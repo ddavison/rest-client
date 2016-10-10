@@ -126,11 +126,11 @@ class RestClientView extends ScrollView
         @a class: "#{rest_form.result_headers_link.split('.')[1]}", 'Headers'
         @span ' | '
         @span class: "#{rest_form.status.split('.')[1]}"
+        @span class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
         @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
         @pre class: "#{rest_form.result_headers.split('.')[1]}", ""
         @pre class: "#{rest_form.result.split('.')[1]}", "#{RestClientResponse.DEFAULT_RESPONSE}"
-        @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
     @COLLECTIONS_PATH = "#{PACKAGE_PATH}/collections.json"
