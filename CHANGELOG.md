@@ -1,5 +1,12 @@
 # Change Log
 
+## [v1.2.6](https://github.com/ddavison/rest-client/tree/v1.2.6) (2016-10-10)
+[Full Changelog](https://github.com/ddavison/rest-client/compare/v1.2.5...v1.2.6)
+
+**Merged pull requests:**
+
+- Fix the bug of headers not being saved [\#65](https://github.com/ddavison/rest-client/pull/65) ([jonatanklosko](https://github.com/jonatanklosko))
+
 ## [v1.2.5](https://github.com/ddavison/rest-client/tree/v1.2.5) (2016-09-21)
 [Full Changelog](https://github.com/ddavison/rest-client/compare/v1.2.4...v1.2.5)
 
