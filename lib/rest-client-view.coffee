@@ -196,10 +196,12 @@ class RestClientView extends ScrollView
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
-    extension = mime.extension(@lastResponse.headers['content-type']);
-    file_name = "#{@lastRequest.method} #{@lastRequest.url}#{'.' + extension if extension}"
-    editor = new RestClientEditor(textResult, file_name)
+    editor = new RestClientEditor(textResult, @constructFileName())
     editor.open()
+
+  constructFileName: ->
+    extension = mime.extension(@lastResponse.headers['content-type'])
+    "#{@lastRequest.method} #{@lastRequest.url}#{'.' + extension if extension}"
 
   encodePayload: ->
     $(rest_form.payload).val(
@@ -286,6 +288,7 @@ class RestClientView extends ScrollView
     else
       @showErrorResponse(DEFAULT_NORESPONSE)
       result = error
+
     $(rest_form.result).text(result)
     $(rest_form.result_headers).text(headers).hide()
     @emitter.emit RestClientEvent.REQUEST_FINISHED, response
