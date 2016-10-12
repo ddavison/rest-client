@@ -1,6 +1,7 @@
 {$, ScrollView} = require 'atom-space-pen-views'
 {Emitter} = require 'atom'
 querystring = require 'querystring'
+mime = require 'mime-types'
 
 RestClientResponse = require './rest-client-response'
 RestClientEditor = require './rest-client-editor'
@@ -125,17 +126,18 @@ class RestClientView extends ScrollView
         @a class: "#{rest_form.result_headers_link.split('.')[1]}", 'Headers'
         @span ' | '
         @span class: "#{rest_form.status.split('.')[1]}"
+        @span class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
         @span class: "#{rest_form.loading.split('.')[1]} loading loading-spinner-small inline-block", style: 'display: none;'
         @pre class: "#{rest_form.result_headers.split('.')[1]}", ""
         @pre class: "#{rest_form.result.split('.')[1]}", "#{RestClientResponse.DEFAULT_RESPONSE}"
-        @div class: "text-info lnk #{rest_form.open_in_editor.split('.')[1]}", 'Open in separate editor'
 
   initialize: ->
     @COLLECTIONS_PATH = "#{PACKAGE_PATH}/collections.json"
     @RECENT_REQUESTS_PATH = "#{PACKAGE_PATH}/recent.json"
 
     @lastRequest = null
+    @lastResponse = null
 
     @recentRequests = new RestClientPersist(@RECENT_REQUESTS_PATH)
     @recentRequests.setRequestFileLimit(RECENT_REQUESTS_FILE_LIMIT)
@@ -194,9 +196,12 @@ class RestClientView extends ScrollView
 
   openInEditor: ->
     textResult = $(rest_form.result).text()
-    file_name = "#{current_method} - #{$(rest_form.url).val()}"
-    editor = new RestClientEditor(textResult, file_name)
+    editor = new RestClientEditor(textResult, @constructFileName())
     editor.open()
+
+  constructFileName: ->
+    extension = mime.extension(@lastResponse.headers['content-type'])
+    "#{@lastRequest.method} #{@lastRequest.url}#{'.' + extension if extension}"
 
   encodePayload: ->
     $(rest_form.payload).val(
@@ -267,6 +272,7 @@ class RestClientView extends ScrollView
       body: @getRequestBody()
 
   onResponse: (error, response, body) =>
+    @setLastResponse(response)
     if !error
       statusMessage = response.statusCode + " " + response.statusMessage
 
@@ -385,6 +391,9 @@ class RestClientView extends ScrollView
 
   setLastRequest: (request) =>
     @lastRequest = request
+
+  setLastResponse: (response) =>
+    @lastResponse = response
 
   getHeadersAsString: (headers)  ->
     output = ''
