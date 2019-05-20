@@ -39,6 +39,7 @@ rest_form =
   result_link: '.rest-client-result-link',
   result_headers_link: '.rest-client-result-headers-link',
   status: '.rest-client-status',
+  time: '.rest-client-time',
   strict_ssl: '.rest-client-strict-ssl',
   proxy_server: '.rest-client-proxy-server',
   open_in_editor: '.rest-client-open-in-editor'
@@ -128,6 +129,8 @@ class RestClientView extends ScrollView
         @a class: "#{nameOf rest_form.result_headers_link}", 'Headers'
         @span ' | '
         @span class: "#{nameOf rest_form.status}"
+        @span ' '
+        @span class: "#{nameOf rest_form.time}"
         @span class: "text-info lnk #{nameOf rest_form.open_in_editor}", 'Open in separate editor'
 
         @span class: "#{nameOf rest_form.loading} loading loading-spinner-small inline-block", style: 'display: none;'
@@ -267,6 +270,7 @@ class RestClientView extends ScrollView
   getRequestOptions: ->
     options =
       url: $(rest_form.url).val()
+      time: true
       headers: @getHeaders()
       method: current_method,
       strictSSL: $(rest_form.strict_ssl).is(':checked'),
@@ -275,6 +279,7 @@ class RestClientView extends ScrollView
 
   onResponse: (error, response, body) =>
     @setLastResponse(response)
+    @showTime("| " + response.elapsedTime + "ms")
     if !error
       statusMessage = response.statusCode + " " + response.statusMessage
 
@@ -317,6 +322,10 @@ class RestClientView extends ScrollView
     $(rest_form.status)
       .removeClass('text-error')
       .addClass('text-success')
+      .text(text)
+
+  showTime: (text) =>
+    $(rest_form.time)
       .text(text)
 
   showErrorResponse: (text) =>
