@@ -250,6 +250,9 @@ class RestClientView extends ScrollView
       atom.notifications.addError PAYLOAD_JSON_ERROR_MESSAGE
       return
 
+    if request_options.method == "HEAD"
+      request_options.body = ""
+
     if request_options.url
       @emitter.emit RestClientEvent.NEW_REQUEST, request_options
       RestClientHttp.send(request_options, @onResponse)
