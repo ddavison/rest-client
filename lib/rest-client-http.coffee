@@ -16,7 +16,11 @@ class RestClientHttp
     encodeURIComponent(payload)
 
   @decodePayload: (payload) ->
-    decodeURIComponent(payload)
+    try
+      decodeURIComponent(payload)
+    catch error
+      alert("Cannot decode payload. Ensure that the payload is encoded before it is decoded.\n    #{error}")
+      false
 
   @send: (request_options, callback) ->
     request(request_options, callback)

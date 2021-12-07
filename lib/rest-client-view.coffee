@@ -214,9 +214,11 @@ class RestClientView extends ScrollView
     )
 
   decodePayload: ->
+    decoded_payload = RestClientHttp.decodePayload($(rest_form.payload).val())
+
     $(rest_form.payload).val(
       RestClientHttp.decodePayload($(rest_form.payload).val())
-    )
+    ) if decoded_payload
 
   clearForm: ->
     @hideLoading()
