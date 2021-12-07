@@ -225,10 +225,10 @@ class RestClientView extends ScrollView
 
   setDefaultValues: ->
     $(rest_form.url).val('')
-    $(rest_form.headers).val('')
     $(rest_form.payload).val('')
     $(rest_form.status).val('')
-    $(rest_form.result).text(RestClientResponse.DEFAULT_RESPONSE)
+    @setHeaders('')
+    @setResult(RestClientResponse.DEFAULT_RESPONSE)
 
   getHeaders: ->
     headers = {}
@@ -281,6 +281,14 @@ class RestClientView extends ScrollView
       body: @getRequestBody()
 
   onResponse: (error, response, body) =>
+    if error
+      @showErrorResponse(error)
+      @showTime("")
+      @hideLoading()
+      @setResult("N/A")
+      @setHeaders("N/A")
+      return
+
     @setLastResponse(response)
     @showTime("| " + response.elapsedTime + "ms")
     if !error
@@ -299,8 +307,8 @@ class RestClientView extends ScrollView
       @showErrorResponse(DEFAULT_NORESPONSE)
       result = error
 
-    $(rest_form.result).text(result)
-    $(rest_form.result_headers).text(headers).hide()
+    @setResult(result)
+    @setHeaders(headers)
     @emitter.emit RestClientEvent.REQUEST_FINISHED, response
 
   getRequestBody: ->
@@ -316,6 +324,14 @@ class RestClientView extends ScrollView
           body = payload
 
     body
+
+  # Set the text of the response result
+  setResult: (result) =>
+    $(rest_form.result).text(result)
+
+  # Set the text of the headers
+  setHeaders: (headers) =>
+    $(rest_form.result_headers).text(headers).hide()
 
   getContentType: ->
     headers = @getHeaders()
